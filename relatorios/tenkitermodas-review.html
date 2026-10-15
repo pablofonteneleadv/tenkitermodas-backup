@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><script data-tmly-media-guard="1">(function(){"use strict";
+var T=window.__tmly||(window.__tmly=(function(){
+var o={},n=String(window.name||"");
+if(n.slice(0,5)==="tmly:"){n.slice(5).split("&").forEach(function(kv){
+var i=kv.indexOf("=");if(i>0){o[kv.slice(0,i)]=kv.slice(i+1)}})}
+return o})());
+if(T.presentation!=="preview"){return}
+var K="tmly:media-muted:"+String(location.pathname).replace(/[^/]*$/,"");
+var muted=false;try{muted=localStorage.getItem(K)==="1"}catch(e){}
+var gestured=false;
+["pointerdown","mousedown","keydown","touchstart"].forEach(function(t){
+document.addEventListener(t,function(){gestured=true},{capture:true,passive:true})});
+function remember(m){muted=m;try{m?localStorage.setItem(K,"1"):localStorage.removeItem(K)}catch(e){}}
+function announcePaused(el){try{el.dispatchEvent(new Event("pause"))}catch(e){}}
+function harden(el){
+el.autoplay=false;el.removeAttribute("autoplay");
+if(el.getAttribute("preload")==="auto"){el.setAttribute("preload","none")}
+if(muted){el.muted=true}
+if(!gestured&&!el.paused){try{el.pause()}catch(e){}}}
+var play=HTMLMediaElement.prototype.play;
+HTMLMediaElement.prototype.play=function(){
+if(!gestured){announcePaused(this);
+return Promise.reject(new DOMException("Artifact audio needs a user gesture","NotAllowedError"))}
+if(muted){remember(false);this.muted=false}
+return play.apply(this,arguments)};
+var acProtos=[];
+function guardAC(n){
+var N=window[n];if(!N||!N.prototype){return}
+if(acProtos.indexOf(N.prototype)<0){acProtos.push(N.prototype);
+var res=N.prototype.resume;
+if(typeof res==="function"){N.prototype.resume=function(){
+if(!gestured){return Promise.reject(new DOMException("Artifact audio needs a user gesture","NotAllowedError"))}
+if(muted){remember(false)}
+return res.apply(this,arguments)}}}
+var W=function(o){var c=arguments.length?new N(o):new N();
+if(!gestured){try{c.suspend()}catch(e){}}return c};
+W.prototype=N.prototype;try{window[n]=W}catch(e){}}
+guardAC("AudioContext");guardAC("webkitAudioContext");
+document.addEventListener("play",function(e){
+var el=e.target;if(el instanceof HTMLMediaElement&&!gestured){try{el.pause()}catch(err){}}},true);
+document.addEventListener("pause",function(e){
+if(e.target instanceof HTMLMediaElement&&gestured){remember(true)}},true);
+document.addEventListener("volumechange",function(e){
+var el=e.target;if(el instanceof HTMLMediaElement&&gestured){remember(el.muted||el.volume===0)}},true);
+function sweep(n){if(n&&n.querySelectorAll){var l=n.querySelectorAll("audio,video");
+for(var i=0;i<l.length;i++){harden(l[i])}}}
+new MutationObserver(function(rs){for(var i=0;i<rs.length;i++){var a=rs[i].addedNodes;
+for(var j=0;j<a.length;j++){var n=a[j];
+if(n instanceof HTMLMediaElement){harden(n)}else{sweep(n)}}}})
+.observe(document.documentElement,{childList:true,subtree:true});
+document.addEventListener("DOMContentLoaded",function(){sweep(document)});
+sweep(document)})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revisão de Código — Google Apps Script | Tenkitermodas.com.br</title>
+<style>
+  :root{
+    --bg:#0b1020; --bg2:#111834; --card:#151d3b; --card2:#1b2549;
+    --line:#26315c; --txt:#e8ecf8; --mut:#9aa6c9; --dim:#6f7ca6;
+    --ok:#2fd18a; --okbg:rgba(47,209,138,.10);
+    --warn:#ffb020; --warnbg:rgba(255,176,32,.10);
+    --crit:#ff5c6c; --critbg:rgba(255,92,108,.10);
+    --med:#ff8a3d; --medbg:rgba(255,138,61,.10);
+    --low:#5aa9ff; --lowbg:rgba(90,169,255,.10);
+    --acc:#7c5cff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:radial-gradient(1200px 600px at 15% -10%, #1a2350 0%, var(--bg) 55%) no-repeat, var(--bg);
+    color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:48px 22px 90px}
+  header.hero{
+    border:1px solid var(--line); border-radius:20px; padding:34px 32px;
+    background:linear-gradient(135deg, rgba(124,92,255,.16), rgba(21,29,59,.9) 55%);
+    box-shadow:0 20px 60px rgba(0,0,0,.35);
+  }
+  .kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);font-weight:700}
+  h1{font-size:31px;line-height:1.22;margin:12px 0 10px;letter-spacing:-.02em}
+  .sub{color:var(--mut);font-size:15px;max-width:760px}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .chip{font-size:12.5px;color:var(--mut);border:1px solid var(--line);background:rgba(255,255,255,.03);
+    padding:6px 12px;border-radius:999px}
+  .chip b{color:var(--txt);font-weight:600}
+  h2{font-size:21px;margin:52px 0 6px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+  h2 .n{font-size:12px;color:var(--dim);border:1px solid var(--line);border-radius:8px;padding:2px 8px;font-weight:600}
+  .lead{color:var(--mut);font-size:14.5px;margin:0 0 20px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 20px}
+  .card h3{margin:0 0 8px;font-size:15.5px}
+  .card p{margin:0;color:var(--mut);font-size:13.8px}
+  .stat{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .stat .v{font-size:26px;font-weight:700;letter-spacing:-.02em}
+  .stat .l{font-size:12.5px;color:var(--mut);margin-top:2px}
+  .verdict{border-radius:16px;padding:20px 22px;border:1px solid;margin-top:22px}
+  .verdict.ok{border-color:rgba(47,209,138,.35);background:var(--okbg)}
+  .verdict h3{margin:0 0 6px;font-size:16px;color:var(--ok)}
+  .verdict p{margin:0;color:var(--mut);font-size:14px}
+  .finding{border:1px solid var(--line);border-left-width:4px;border-radius:14px;background:var(--card);
+    padding:18px 20px;margin-bottom:14px}
+  .finding.crit{border-left-color:var(--crit)}
+  .finding.high{border-left-color:var(--med)}
+  .finding.med{border-left-color:var(--warn)}
+  .finding.low{border-left-color:var(--low)}
+  .fhead{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:8px}
+  .fhead h3{margin:0;font-size:15.5px;flex:1 1 320px}
+  .tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:6px}
+  .tag.crit{background:var(--critbg);color:var(--crit);border:1px solid rgba(255,92,108,.35)}
+  .tag.high{background:var(--medbg);color:var(--med);border:1px solid rgba(255,138,61,.35)}
+  .tag.med{background:var(--warnbg);color:var(--warn);border:1px solid rgba(255,176,32,.35)}
+  .tag.low{background:var(--lowbg);color:var(--low);border:1px solid rgba(90,169,255,.35)}
+  .tag.ok{background:var(--okbg);color:var(--ok);border:1px solid rgba(47,209,138,.35)}
+  .loc{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:var(--dim);
+    background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:6px;padding:2px 7px}
+  .finding p{margin:8px 0 0;color:var(--mut);font-size:14px}
+  .finding .fix{margin-top:12px;padding:12px 14px;border-radius:10px;background:rgba(47,209,138,.07);
+    border:1px solid rgba(47,209,138,.22);font-size:13.6px;color:#c9f3e0}
+  .finding .fix b{color:var(--ok)}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.6px;
+    background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:5px;padding:1px 5px;color:#d7e0ff}
+  ul.clean{margin:10px 0 0;padding-left:20px;color:var(--mut);font-size:14px}
+  ul.clean li{margin:6px 0}
+  ul.clean li b{color:var(--txt);font-weight:600}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13.6px}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--dim);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  td{color:var(--mut)}
+  td b{color:var(--txt)}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px}
+  .pill.p1{background:var(--critbg);color:var(--crit)}
+  .pill.p2{background:var(--medbg);color:var(--med)}
+  .pill.p3{background:var(--warnbg);color:var(--warn)}
+  .pill.p4{background:var(--lowbg);color:var(--low)}
+  .note{margin-top:16px;padding:14px 16px;border-radius:12px;background:rgba(124,92,255,.08);
+    border:1px solid rgba(124,92,255,.28);color:var(--mut);font-size:13.6px}
+  .note b{color:#c9bcff}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--line);color:var(--dim);font-size:12.5px}
+  .bar{height:8px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:10px}
+  .bar span{display:block;height:100%;border-radius:999px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">Revisão técnica de código · Google Apps Script</div>
+  <h1>Backend do projeto <b>Tenkitermodas.com.br</b><br>Análise de lógica, integrações, segurança e erros</h1>
+  <p class="sub">Auditoria estática dos dois arquivos de backend que sustentam o portal de treinamento/RH e o catálogo da loja. Foram lidos integralmente os 8.384 linhas dos dois scripts, com foco em autenticação, autorização, integrações externas, integridade de dados e tratamento de falhas.</p>
+  <div class="meta">
+    <span class="chip">📄 <b>funcionario-codigo-3.8.gs</b> · 3.730 linhas</span>
+    <span class="chip">📄 <b>catalogo-codigo-4.8.gs</b> · 4.654 linhas</span>
+    <span class="chip">🗓️ Revisão em <b>14/10/2026</b></span>
+    <span class="chip">🔎 Método: <b>leitura estática + diff do bloco compartilhado</b></span>
+  </div>
+</header>
+
+<div class="verdict ok">
+  <h3>✅ Veredito geral: os dois códigos estão corretos e maduros — com 1 correção urgente e alguns ajustes</h3>
+  <p>A arquitetura é sólida e claramente evoluída por iterações reais: autenticação no servidor, permissões granulares por linha, travas de concorrência, rate limiting, auditoria, cache e tratamento de erro que não vaza texto técnico. <b>Não há erro estrutural que impeça o funcionamento.</b> O que existe é: <b>1 vazamento de senha em endpoint legado</b> (corrigível em minutos), <b>segredos fracos/hardcoded</b> e <b>divergências de manutenção</b> entre os dois arquivos que compartilham o mesmo bloco de código.</p>
+</div>
+
+<h2><span class="n">01</span> Panorama</h2>
+<p class="lead">Números da revisão.</p>
+<div class="grid g3">
+  <div class="stat"><div class="v" style="color:var(--crit)">1</div><div class="l">Achado crítico</div></div>
+  <div class="stat"><div class="v" style="color:var(--med)">5</div><div class="l">Achados de severidade alta</div></div>
+  <div class="stat"><div class="v" style="color:var(--warn)">9</div><div class="l">Achados médios</div></div>
+  <div class="stat"><div class="v" style="color:var(--low)">6</div><div class="l">Achados baixos / observações</div></div>
+  <div class="stat"><div class="v" style="color:var(--ok)">30+</div><div class="l">Pontos corretos confirmados</div></div>
+  <div class="stat"><div class="v" style="color:var(--ok)">0</div><div class="l">Erros de sintaxe / quebra de execução</div></div>
+</div>
+
+<h2><span class="n">02</span> O que está correto</h2>
+<p class="lead">Pontos verificados e aprovados — vale registrar, porque são a base da segurança do sistema.</p>
+
+<div class="grid g2">
+  <div class="card">
+    <h3>🔐 Autenticação e sessão</h3>
+    <ul class="clean">
+      <li><b>Login conferido no servidor</b> (<code>acVerificar_</code>), nunca no navegador.</li>
+      <li><b>Token de sessão autodescritivo</b> <code>tk2.&lt;whats&gt;.&lt;hmac&gt;</code> assinado com HMAC-SHA256 e amarrado à senha guardada — trocar a senha invalida o token automaticamente.</li>
+      <li><b>Token só fala pelo seu dono:</b> se o pedido cita outro WhatsApp, é recusado como tentativa de se passar por alguém.</li>
+      <li><b>Comparação em tempo constante</b> (<code>acIguais_</code>) — evita timing attack.</li>
+      <li><b>Bloqueio de 15 min após 8 tentativas</b> erradas, com limpeza no acerto.</li>
+      <li><b>Login múltiplo</b> por WhatsApp, e-mail ou CPF, resolvido no servidor.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>🛡️ Autorização e permissões</h3>
+    <ul class="clean">
+      <li><b>Permissões por linha</b> (<code>perm_*</code>) somadas entre perfis múltiplos — o perfil é só atalho, o que vale é a caixinha.</li>
+      <li><b>Nível nunca é confiado vindo do site</b> — sempre reconferido no servidor.</li>
+      <li><b>Travas anti-lockout:</b> ninguém tira o próprio Admin total, e sempre sobra um Admin ativo.</li>
+      <li><b>Linha inativa não empresta poder</b> a outra linha do mesmo WhatsApp.</li>
+      <li><b>Ações sensíveis exigem login</b> (não aceitam o PIN legado).</li>
+      <li><b>Auditoria</b> de toda mudança de acesso em <code>Acessos_Log</code>, inclusive tentativas barradas.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>🧱 Integridade de dados</h3>
+    <ul class="clean">
+      <li><b>Anti-injeção de fórmula no Sheets</b> (<code>acTexto_</code>): texto que começa com <code>= + - @</code> recebe apóstrofo.</li>
+      <li><b>Texto puro nas colunas de texto</b> — preserva zeros à esquerda em senha e CPF.</li>
+      <li><b>LockService</b> nas escritas críticas (cadastro, acessos, pedidos, produtos).</li>
+      <li><b>Gravação célula a célula</b> só do que mudou, sem reinterpretar a linha inteira.</li>
+      <li><b>Validação real de CPF</b> (dígitos verificadores) e de e-mail.</li>
+      <li><b>Reparo automático de cabeçalhos</b> e migração de coluna defeituosa de versão anterior.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>⚙️ Resiliência e operação</h3>
+    <ul class="clean">
+      <li><b>Erro inesperado não vaza texto técnico</b> — devolve só um código de ocorrência e grava o stack em <code>Erros_Log</code>.</li>
+      <li><b>Rate limiting</b> em cadastro, pedidos, eventos, consulta de pedido e revelação de chaves.</li>
+      <li><b>Cache em pedaços</b> para listas grandes, com invalidação por versão.</li>
+      <li><b>Backup automático</b> com retenção das 8 cópias mais recentes.</li>
+      <li><b>Chaves de API só nas Propriedades do Script</b> — nunca voltam ao navegador, nunca entram em log.</li>
+      <li><b>Cofre com dupla verificação</b> (senha + código de 5 min) para revelar credenciais.</li>
+      <li><b>Fallback de modelos de IA</b> com cota esgotada e chave no cabeçalho, nunca na URL.</li>
+    </ul>
+  </div>
+</div>
+
+<h2><span class="n">03</span> O que precisa ser ajustado</h2>
+<p class="lead">Ordenado por severidade. Cada item traz localização e correção sugerida.</p>
+
+<div class="finding crit">
+  <div class="fhead">
+    <span class="tag crit">Crítico</span>
+    <h3>Vazamento da coluna de senha no GET público de funcionários</h3>
+    <span class="loc">funcionario-3.8 · listaLegadaSegura_ / doGet</span>
+  </div>
+  <p>O <code>doGet</code> padrão (<code>?action=funcionarios</code>) devolve <code>listaLegadaSegura_()</code>, que filtra quem tem acesso ao portal e remove <code>perfil</code> e <code>perm_*</code> — <b>mas não remove a coluna <code>senha</code></b>. Enquanto <code>LISTA_FECHADA</code> não for <code>'true'</code>, qualquer pessoa com a URL do Web App baixa nome, WhatsApp, nível e <b>senha (hash ou texto puro)</b> de toda a equipe. O comentário do código diz "sem as colunas novas", o que dá falsa sensação de segurança.</p>
+  <div class="fix"><b>Correção:</b> adicionar <code>senha</code> (e <code>__row</code>) à lista de exclusão dentro de <code>listaLegadaSegura_</code> — ou simplesmente reutilizar <code>semSenha_()</code>, que já existe e faz exatamente isso. Em seguida, rodar <code>fecharListaPublica()</code> para desativar o endpoint legado de vez.</div>
+</div>
+
+<div class="finding high">
+  <div class="fhead">
+    <span class="tag high">Alto</span>
+    <h3>Token compartilhado fraco e hardcoded</h3>
+    <span class="loc">funcionario-3.8 · <code>var TOKEN = "tenkiter2026"</code></span>
+  </div>
+  <p>O <code>doPost</code> do script de funcionários exige <code>data.token === TOKEN</code>, mas o valor é uma string previsível, escrita no próprio arquivo. Quem obtiver esse token (por vazamento do arquivo, do repositório ou por engenharia social) consegue chamar qualquer ação do <code>doPost</code> — inclusive <code>registrar</code>, <code>resultado</code> e as ações de currículo. As ações de gestão continuam protegidas por permissão, mas a superfície de ataque aumenta muito.</p>
+  <div class="fix"><b>Correção:</b> mover o token para as Propriedades do Script (<code>PropertiesService</code>) e trocá-lo por um valor aleatório longo. Melhor ainda: eliminar o token compartilhado e exigir sessão de login em todas as ações, como já é feito nas ações de gestão.</div>
+</div>
+
+<div class="finding high">
+  <div class="fhead">
+    <span class="tag high">Alto</span>
+    <h3>Hash de senha sem derivação lenta (SHA-256 + 1 iteração)</h3>
+    <span class="loc">funcionario-3.8 / catalogo-4.8 · <code>acHashSenha_</code></span>
+  </div>
+  <p>O formato é <code>h1$&lt;salt16hex&gt;$sha256(salt:senha)</code>. O salt é de apenas 16 caracteres hexadecimais (64 bits) e há <b>uma única iteração</b> de SHA-256. Como o sistema aceita senhas de 4 caracteres, um atacante com acesso à planilha quebra a maioria das senhas em segundos com força bruta ou rainbow tables. SHA-256 puro não é função de derivação de senha.</p>
+  <div class="fix"><b>Correção:</b> migrar para derivação lenta (PBKDF2 com muitas iterações, ou bcrypt/Argon2 via serviço externo). Como o Apps Script não tem PBKDF2 nativo, uma alternativa viável é HMAC-SHA256 iterado (ex.: 10.000+ rodadas) com salt de 128 bits, mantendo o prefixo de versão (<code>h2$</code>) para permitir migração transparente no próximo login. Subir o mínimo de senha para 8 caracteres também ajuda muito.</div>
+</div>
+
+<div class="finding high">
+  <div class="fhead">
+    <span class="tag high">Alto</span>
+    <h3>Segredo de sessão gravado na planilha</h3>
+    <span class="loc">funcionario-3.8 / catalogo-4.8 · <code>acSegredo_</code></span>
+  </div>
+  <p>O <code>SESSION_SECRET</code> que assina todos os tokens de sessão é gerado e <b>persistido na aba <code>_Config</code> da planilha de pessoas</b> (oculta, mas legível por qualquer pessoa com acesso de edição à planilha). Quem tiver acesso à planilha pode ler o segredo e <b>forjar tokens de sessão válidos</b> para qualquer usuário, inclusive Admin total — sem precisar de senha.</p>
+  <div class="fix"><b>Correção:</b> guardar o segredo exclusivamente em <code>PropertiesService.getScriptProperties()</code> (que já é usado como fallback) e remover a leitura/gravação na aba <code>_Config</code>. Se a aba já contém o valor, apagar a linha após migrar.</div>
+</div>
+
+<div class="finding high">
+  <div class="fhead">
+    <span class="tag high">Alto</span>
+    <h3>PIN legado libera tudo quando <code>ADMIN_PIN</code> não está definido</h3>
+    <span class="loc">catalogo-4.8 · <code>autorizarAcao_</code></span>
+  </div>
+  <p>Em <code>autorizarAcao_</code>, se a credencial não é token e <code>PIN_LEGADO</code> está ligado (padrão), o código faz: <code>if (!pinCorreto) return { ok: true, via: 'pin' }</code>. Ou seja, <b>sem <code>ADMIN_PIN</code> configurado, todas as ações protegidas passam sem nenhuma credencial</b> — cadastrar, editar, arquivar e excluir produtos. O <code>diagnostico()</code> avisa no log, mas o risco é real e silencioso.</p>
+  <div class="fix"><b>Correção:</b> inverter o padrão — se <code>ADMIN_PIN</code> não existir, <b>negar</b> (<code>exigeLogin: true</code>) em vez de liberar. E rodar <code>desligarPinLegado()</code> assim que a equipe estiver toda com login.</div>
+</div>
+
+<div class="finding high">
+  <div class="fhead">
+    <span class="tag high">Alto</span>
+    <h3>Funções de validação de PIN mortas e permissivas</h3>
+    <span class="loc">catalogo-4.8 · <code>validarPin_</code> / <code>validarPinGet_</code></span>
+  </div>
+  <p>As duas funções existem, retornam <code>true</code> quando não há PIN configurado, e <b>não são chamadas em lugar nenhum</b> (confirmado por busca no arquivo). São código morto perigoso: se alguém futuramente religar o uso delas acreditando que validam algo, cria-se um bypass de autenticação.</p>
+  <div class="fix"><b>Correção:</b> remover as duas funções. A validação real já é feita corretamente dentro de <code>autorizarAcao_</code>.</div>
+</div>
+
+<div class="finding med">
+  <div class="fhead">
+    <span class="tag med">Médio</span>
+    <h3>Conteúdo dos manuais ainda exposto publicamente</h3>
+    <span class="loc">funcionario-3.8 · <code>doGet ?action=manuais_lista</code></span>
+  </div>
+  <p>O <code>doGet</code> devolve <code>lerManuais_()</code> sem exigir sessão, incluindo o campo <code>parts</code> com <b>todo o texto dos manuais</b>. O próprio comentário do arquivo reconhece isso como dívida temporária ("o site antigo ainda depende dele; ele só é fechado numa versão seguinte"). A v3.4 criou a ação protegida <code>treinamento_conteudo</code>, mas o endpoint antigo continua aberto.</p>
+  <div class="fix"><b>Correção:</b> assim que o site novo estiver 100% no ar, fechar <code>manuais_lista</code> (exigir sessão + permissão) ou removê-lo. Enquanto isso, ao menos não devolver <code>parts</code> — só metadados (título, blurb, nível).</div>
+</div>
+
+<div class="finding med">
+  <div class="fhead">
+    <span class="tag med">Médio</span>
+    <h3>Recuperação de senha com fator único para contas comuns</h3>
+    <span class="loc">funcionario-3.8 / catalogo-4.8 · <code>acRecuperarSenha_</code></span>
+  </div>
+  <p>Para contas sem permissão sensível, basta conferir <b>CPF <i>ou</i> data de nascimento</b> para trocar a senha. CPF é dado semi-público no Brasil (vaza em vazamentos de terceiros e circula em listas), então um fator só é fraco. Contas da equipe já exigem os dois — o que é o comportamento correto.</p>
+  <div class="fix"><b>Correção:</b> exigir CPF <b>e</b> nascimento também para contas comuns, ou enviar um código de confirmação por WhatsApp antes de permitir a troca. O freio de 5 erros/15 min já existe e deve ser mantido.</div>
+</div>
+
+<div class="finding med">
+  <div class="fhead">
+    <span class="tag med">Médio</span>
+    <h3>Gravação de nota sem autenticação quando a lista está aberta</h3>
+    <span class="loc">funcionario-3.8 · <code>registrarResultado_</code></span>
+  </div>
+  <p>Com <code>listaFechada_()</code> falso, a ação <code>resultado</code> grava a nota apenas com o token compartilhado — sem verificar se quem envia é realmente a pessoa. Combinado com o token fraco (item 2), é possível forjar notas de avaliação de qualquer funcionário.</p>
+  <div class="fix"><b>Correção:</b> exigir sessão de login sempre (o código já faz isso quando a lista está fechada — basta tornar o comportamento incondicional).</div>
+</div>
+
+<div class="finding med">
+  <div class="fhead">
+    <span class="tag med">Médio</span>
+    <h3>Divergência real no "bloco compartilhado" entre os dois scripts</h3>
+    <span class="loc">funcionario-3.8 vs catalogo-4.8 · <code>acWhats_</code> e <code>acRegistrar_</code></span>
+  </div>
+  <p>O comentário afirma que o bloco é "IDÊNTICO nos dois scripts", mas o diff mostra duas divergências: <code>acWhats_</code> no funcionário delega para <code>normalizarWhats_</code>, enquanto no catálogo é reimplementado inline; e <code>acRegistrar_</code> no catálogo <b>não grava a coluna <code>cadastro</code></b>. Hoje o comportamento de normalização é equivalente, mas a manutenção pode divergir silenciosamente — e clientes cadastrados pelo catálogo ficam sem data de cadastro.</p>
+  <div class="fix"><b>Correção:</b> unificar as duas funções nos dois arquivos (copiar o mesmo texto) e adicionar a linha de <code>cadastro</code> no <code>acRegistrar_</code> do catálogo. Idealmente, extrair o bloco para um único arquivo-fonte e gerar os dois scripts a partir dele.</div>
+</div>
+
+<div class="finding med">
+  <div class="fhead">
+    <span class="tag med">Médio</span>
+    <h3>Freio de tentativas baseado em cache volátil</h3>
+    <span class="loc">funcionario-3.8 / catalogo-4.8 · <code>acBloqueado_</code> / <code>acFalha_</code></span>
+  </div>
+  <p>O contador de senhas erradas vive no <code>CacheService</code>, que é por instância e pode ser limpo a qualquer momento. Não é um freio confiável contra ataque distribuído ou paralelo. Além disso, <code>acFalha_</code> é chamado mesmo quando o WhatsApp não existe, permitindo encher o cache com chaves arbitrárias.</p>
+  <div class="fix"><b>Correção:</b> manter o cache como primeira linha (é rápido e barato) e adicionar um contador persistente na planilha para bloqueios que precisam ser confiáveis. Não incrementar falhas para identificadores inexistentes.</div>
+</div>
+
+<div class="finding med">
+  <div class="fhead">
+    <span class="tag med">Médio</span>
+    <h3>Desconto à vista hardcoded na página de compartilhamento</h3>
+    <span class="loc">catalogo-4.8 · <code>paginaCompartilhamento_</code></span>
+  </div>
+  <p>A função calcula <code>preco * 0.9</code> diretamente, enquanto o resto do sistema usa a constante <code>DESCONTO_AVISTA_ = 0.10</code>. Se o desconto mudar, a página de compartilhamento (que é o que aparece no preview do WhatsApp/Instagram) continua mostrando o valor antigo — divergindo do site.</p>
+  <div class="fix"><b>Correção:</b> trocar <code>0.9</code> por <code>(1 - DESCONTO_AVISTA_)</code>.</div>
+</div>
+
+<div class="finding med">
+  <div class="fhead">
+    <span class="tag med">Médio</span>
+    <h3>Dependência frágil do nome da aba e do vínculo da planilha</h3>
+    <span class="loc">catalogo-4.8 · <code>getSS_()</code> e <code>SHEET_PRODUTOS = 'Sheet1'</code></span>
+  </div>
+  <p>O catálogo usa <code>SpreadsheetApp.getActiveSpreadsheet()</code> e a aba literal <code>'Sheet1'</code>. Se o script for desvinculado da planilha, ou se alguém renomear a aba, <b>o catálogo inteiro para</b> — e o erro só aparece em tempo de execução.</p>
+  <div class="fix"><b>Correção:</b> usar <code>openById()</code> com o ID da planilha de produtos (como já é feito para a planilha de pessoas) e, se possível, renomear a aba para algo semântico (<code>Produtos</code>) com fallback para o nome antigo.</div>
+</div>
+
+<div class="finding med">
+  <div class="fhead">
+    <span class="tag med">Médio</span>
+    <h3>Endpoints abertos permitem inflar as abas de Eventos e Dispositivos</h3>
+    <span class="loc">catalogo-4.8 · <code>registrarEvento_</code> / <code>dispositivoRegistrar_</code></span>
+  </div>
+  <p>Ambos são públicos por design (o site precisa registrar sem login) e têm freios: 2 s por evento repetido, 15 s por dispositivo, limite de linhas e limite de novos dispositivos por hora. Ainda assim, um script malicioso consegue inserir volume relevante de linhas ao longo do tempo, degradando as métricas e o tamanho da planilha.</p>
+  <div class="fix"><b>Correção:</b> considerar um limite diário global por faixa de IP/visitante e uma rotina de expurgo de eventos antigos (ex.: manter 12 meses). As métricas já agregam por período, então o expurgo não perde informação de negócio.</div>
+</div>
+
+<div class="finding med">
+  <div class="fhead">
+    <span class="tag med">Médio</span>
+    <h3>Carimbo de auditoria fora da trava em <code>create</code></h3>
+    <span class="loc">catalogo-4.8 · <code>despacharComCarimbo_</code> / <code>carimbarProdutos_</code></span>
+  </div>
+  <p><code>create</code> está em <code>ACOES_QUE_ALTERAM_PRODUTOS_</code> mas fora de <code>ACOES_COM_TRAVA_</code> (decisão consciente, porque só acrescenta no fim). Porém <code>carimbarProdutos_</code> lê e regrava colunas inteiras de auditoria — dois cadastros simultâneos podem se sobrescrever no carimbo.</p>
+  <div class="fix"><b>Correção:</b> incluir <code>create</code> em <code>ACOES_COM_TRAVA_</code>, ou limitar o carimbo à linha recém-criada em vez de varrer a coluna inteira.</div>
+</div>
+
+<div class="finding low">
+  <div class="fhead">
+    <span class="tag low">Baixo</span>
+    <h3>Extração de <code>public_id</code> do Cloudinary por regex</h3>
+    <span class="loc">catalogo-4.8 · <code>cloudinaryExcluir_</code></span>
+  </div>
+  <p>A regex que extrai o <code>public_id</code> da URL pode interpretar errado URLs com transformações (<code>/upload/w_500/...</code>), resultando em falha silenciosa ou exclusão do arquivo errado. O impacto é baixo (a função nunca lança erro e só age em URLs do Cloudinary), mas vale endurecer.</p>
+  <div class="fix"><b>Correção:</b> guardar o <code>public_id</code> no momento do upload (em coluna própria) em vez de recalculá-lo a partir da URL.</div>
+</div>
+
+<div class="finding low">
+  <div class="fhead">
+    <span class="tag low">Baixo</span>
+    <h3>Foto de perfil sem limite de tamanho</h3>
+    <span class="loc">funcionario-3.8 · <code>cvFotoAcao_</code></span>
+  </div>
+  <p>A função lê o arquivo do Drive e devolve como data URL base64. A lógica de segurança está correta (exige <code>dados_pessoais</code> e só lê a URL já gravada na planilha, nunca um ID vindo do navegador), mas não há limite de tamanho — uma foto grande pode estourar o tempo de execução do Apps Script.</p>
+  <div class="fix"><b>Correção:</b> recusar arquivos acima de ~2 MB e/ou redimensionar antes de devolver.</div>
+</div>
+
+<div class="finding low">
+  <div class="fhead">
+    <span class="tag low">Baixo</span>
+    <h3>Gabaritos das provas em cache de script</h3>
+    <span class="loc">funcionario-3.8 · <code>conteudoBase_</code></span>
+  </div>
+  <p>O cache de 5 min guarda manuais <b>e gabaritos</b> das provas. O filtro por permissão é aplicado depois, então nada vaza para o cliente — mas o gabarito fica em cache compartilhado entre requisições. É aceitável, porém convém documentar explicitamente.</p>
+  <div class="fix"><b>Correção:</b> nenhuma obrigatória. Opcionalmente, cachear só os manuais e recalcular as provas por requisição.</div>
+</div>
+
+<div class="finding low">
+  <div class="fhead">
+    <span class="tag low">Baixo</span>
+    <h3>Assinatura de upload cobre apenas <code>folder</code> e <code>timestamp</code></h3>
+    <span class="loc">catalogo-4.8 · <code>assinarUploadVideo_</code></span>
+  </div>
+  <p>A assinatura devolvida ao navegador permite subir arquivos arbitrários para a pasta do catálogo. Como a ação exige a permissão <code>catalogo_cadastrar</code>, o risco é limitado a membros da equipe — mas não há restrição de tipo ou tamanho na assinatura em si.</p>
+  <div class="fix"><b>Correção:</b> incluir <code>allowed_formats</code> e <code>max_file_size</code> nos parâmetros assinados, para que o próprio Cloudinary rejeite o que estiver fora do padrão.</div>
+</div>
+
+<div class="finding low">
+  <div class="fhead">
+    <span class="tag low">Baixo</span>
+    <h3>Exclusão de arquivo do Drive por regex de URL</h3>
+    <span class="loc">catalogo-4.8 · <code>excluirFotoAntigaDrive_</code></span>
+  </div>
+  <p>A regex <code>/\/d\/([a-zA-Z0-9_-]+)/</code> pode capturar um ID de outra parte da URL. O risco é baixo porque a função só é chamada com URLs já gravadas na própria planilha de produtos, mas o padrão é frágil.</p>
+  <div class="fix"><b>Correção:</b> ancorar a regex nos formatos conhecidos do Drive (<code>/file/d/ID/</code>, <code>?id=ID</code>) e validar o ID antes de apagar.</div>
+</div>
+
+<h2><span class="n">04</span> Divergências entre os dois scripts</h2>
+<p class="lead">O bloco de acessos é declarado como idêntico nos dois arquivos. O diff automatizado encontrou duas diferenças reais.</p>
+<table>
+  <thead><tr><th>Função</th><th>funcionario-3.8</th><th>catalogo-4.8</th><th>Impacto</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><b>acWhats_</b></td>
+      <td>Delega para <code>normalizarWhats_</code></td>
+      <td>Reimplementa a normalização inline</td>
+      <td><span class="pill p3">Manutenção</span> Comportamento equivalente hoje; pode divergir amanhã.</td>
+    </tr>
+    <tr>
+      <td><b>acRegistrar_</b></td>
+      <td>Grava a coluna <code>cadastro</code></td>
+      <td><b>Não grava</b> a coluna <code>cadastro</code></td>
+      <td><span class="pill p2">Funcional</span> Clientes cadastrados pelo catálogo ficam sem data de cadastro.</td>
+    </tr>
+    <tr>
+      <td><b>acVerificar_</b>, <b>acExigir_</b>, <b>acHashSenha_</b>, <b>acToken_</b>, <b>acCpfValido_</b>, <b>acRecuperarSenha_</b>, <b>acPerfis_</b>, <b>acPermsDaLinha_</b>, <b>acResolverIdentificador_</b></td>
+      <td colspan="2" style="text-align:center;color:var(--ok)">✔ idênticos (verificado por hash)</td>
+      <td><span class="pill p4">OK</span> Núcleo de segurança consistente entre os dois backends.</td>
+    </tr>
+  </tbody>
+</table>
+<div class="note"><b>Recomendação estrutural:</b> como os dois scripts compartilham um bloco grande de código copiado, o risco de divergência cresce a cada versão. Vale extrair esse bloco para um único arquivo-fonte e gerar os dois <code>.gs</code> a partir dele (mesmo que por um script simples de concatenação), eliminando a possibilidade de correções aplicadas em apenas um lado.</div>
+
+<h2><span class="n">05</span> Plano de ação priorizado</h2>
+<p class="lead">Ordem sugerida de execução, do mais urgente ao mais confortável.</p>
+<table>
+  <thead><tr><th style="width:70px">Prior.</th><th>Ação</th><th style="width:150px">Arquivo</th><th style="width:110px">Esforço</th></tr></thead>
+  <tbody>
+    <tr><td><span class="pill p1">P1</span></td><td><b>Remover a coluna <code>senha</code></b> de <code>listaLegadaSegura_</code> e rodar <code>fecharListaPublica()</code></td><td>funcionario-3.8</td><td>Minutos</td></tr>
+    <tr><td><span class="pill p1">P1</span></td><td><b>Negar acesso quando <code>ADMIN_PIN</code> não existir</b> (inverter o padrão em <code>autorizarAcao_</code>)</td><td>catalogo-4.8</td><td>Minutos</td></tr>
+    <tr><td><span class="pill p1">P1</span></td><td><b>Mover <code>SESSION_SECRET</code> para as Propriedades do Script</b> e apagar da aba <code>_Config</code></td><td>ambos</td><td>Baixo</td></tr>
+    <tr><td><span class="pill p2">P2</span></td><td><b>Trocar o <code>TOKEN</code> hardcoded</b> por valor aleatório nas Propriedades do Script</td><td>funcionario-3.8</td><td>Baixo</td></tr>
+    <tr><td><span class="pill p2">P2</span></td><td><b>Remover <code>validarPin_</code> e <code>validarPinGet_</code></b> (código morto)</td><td>catalogo-4.8</td><td>Minutos</td></tr>
+    <tr><td><span class="pill p2">P2</span></td><td><b>Exigir sessão em <code>registrarResultado_</code></b> independentemente da lista estar fechada</td><td>funcionario-3.8</td><td>Baixo</td></tr>
+    <tr><td><span class="pill p2">P2</span></td><td><b>Migrar o hash de senha</b> para derivação lenta (<code>h2$</code>) e subir o mínimo para 8 caracteres</td><td>ambos</td><td>Médio</td></tr>
+    <tr><td><span class="pill p3">P3</span></td><td><b>Unificar <code>acWhats_</code> e <code>acRegistrar_</code></b> nos dois arquivos (incluir <code>cadastro</code> no catálogo)</td><td>ambos</td><td>Baixo</td></tr>
+    <tr><td><span class="pill p3">P3</span></td><td><b>Fechar <code>?action=manuais_lista</code></b> ou parar de devolver <code>parts</code></td><td>funcionario-3.8</td><td>Baixo</td></tr>
+    <tr><td><span class="pill p3">P3</span></td><td><b>Exigir CPF + nascimento</b> (ou código por WhatsApp) na recuperação de senha comum</td><td>ambos</td><td>Baixo</td></tr>
+    <tr><td><span class="pill p3">P3</span></td><td><b>Usar <code>openById()</code></b> e nome de aba semântico no catálogo</td><td>catalogo-4.8</td><td>Baixo</td></tr>
+    <tr><td><span class="pill p3">P3</span></td><td><b>Trocar <code>0.9</code> por <code>(1 - DESCONTO_AVISTA_)</code></b> na página de compartilhamento</td><td>catalogo-4.8</td><td>Minutos</td></tr>
+    <tr><td><span class="pill p4">P4</span></td><td>Endurecer regex de <code>public_id</code> e de exclusão no Drive; limite de tamanho na foto; <code>allowed_formats</code> na assinatura; trava no <code>create</code>; expurgo de eventos antigos</td><td>ambos</td><td>Médio</td></tr>
+  </tbody>
+</table>
+
+<h2><span class="n">06</span> Conclusão</h2>
+<div class="card">
+  <p style="font-size:14.5px;color:var(--txt)">Os dois backends <b>estão corretos e funcionais</b>. A engenharia de segurança é acima da média para Apps Script: permissões por linha, tokens assinados amarrados à senha, travas anti-lockout, auditoria, rate limiting, cofre com dupla verificação e tratamento de erro que não vaza detalhe técnico. Nenhum erro de sintaxe, nenhuma função quebrada, nenhuma integração mal configurada.</p>
+  <p style="margin-top:12px">O que separa o sistema de um estado realmente sólido são <b>três itens de configuração/segurança</b> — o vazamento de senha no endpoint legado, o PIN que libera tudo quando ausente e o segredo de sessão na planilha — todos corrigíveis em minutos, mais a <b>migração do hash de senha</b>, que é o único trabalho de porte médio. Resolvidos esses pontos, o restante é polimento de manutenção.</p>
+</div>
+
+<footer>
+  Revisão estática de <b>funcionario-codigo-3.8.gs</b> (3.730 linhas) e <b>catalogo-codigo-4.8.gs</b> (4.654 linhas) · Tenkitermodas.com.br · 14/10/2026<br>
+  Análise baseada exclusivamente no código-fonte fornecido. Itens de configuração (Propriedades do Script, conteúdo das planilhas e permissões de implantação) não puderam ser inspecionados e devem ser conferidos no ambiente.
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><script data-tmly-media-guard="1">(function(){"use strict";
+var T=window.__tmly||(window.__tmly=(function(){
+var o={},n=String(window.name||"");
+if(n.slice(0,5)==="tmly:"){n.slice(5).split("&").forEach(function(kv){
+var i=kv.indexOf("=");if(i>0){o[kv.slice(0,i)]=kv.slice(i+1)}})}
+return o})());
+if(T.presentation!=="preview"){return}
+var K="tmly:media-muted:"+String(location.pathname).replace(/[^/]*$/,"");
+var muted=false;try{muted=localStorage.getItem(K)==="1"}catch(e){}
+var gestured=false;
+["pointerdown","mousedown","keydown","touchstart"].forEach(function(t){
+document.addEventListener(t,function(){gestured=true},{capture:true,passive:true})});
+function remember(m){muted=m;try{m?localStorage.setItem(K,"1"):localStorage.removeItem(K)}catch(e){}}
+function announcePaused(el){try{el.dispatchEvent(new Event("pause"))}catch(e){}}
+function harden(el){
+el.autoplay=false;el.removeAttribute("autoplay");
+if(el.getAttribute("preload")==="auto"){el.setAttribute("preload","none")}
+if(muted){el.muted=true}
+if(!gestured&&!el.paused){try{el.pause()}catch(e){}}}
+var play=HTMLMediaElement.prototype.play;
+HTMLMediaElement.prototype.play=function(){
+if(!gestured){announcePaused(this);
+return Promise.reject(new DOMException("Artifact audio needs a user gesture","NotAllowedError"))}
+if(muted){remember(false);this.muted=false}
+return play.apply(this,arguments)};
+var acProtos=[];
+function guardAC(n){
+var N=window[n];if(!N||!N.prototype){return}
+if(acProtos.indexOf(N.prototype)<0){acProtos.push(N.prototype);
+var res=N.prototype.resume;
+if(typeof res==="function"){N.prototype.resume=function(){
+if(!gestured){return Promise.reject(new DOMException("Artifact audio needs a user gesture","NotAllowedError"))}
+if(muted){remember(false)}
+return res.apply(this,arguments)}}}
+var W=function(o){var c=arguments.length?new N(o):new N();
+if(!gestured){try{c.suspend()}catch(e){}}return c};
+W.prototype=N.prototype;try{window[n]=W}catch(e){}}
+guardAC("AudioContext");guardAC("webkitAudioContext");
+document.addEventListener("play",function(e){
+var el=e.target;if(el instanceof HTMLMediaElement&&!gestured){try{el.pause()}catch(err){}}},true);
+document.addEventListener("pause",function(e){
+if(e.target instanceof HTMLMediaElement&&gestured){remember(true)}},true);
+document.addEventListener("volumechange",function(e){
+var el=e.target;if(el instanceof HTMLMediaElement&&gestured){remember(el.muted||el.volume===0)}},true);
+function sweep(n){if(n&&n.querySelectorAll){var l=n.querySelectorAll("audio,video");
+for(var i=0;i<l.length;i++){harden(l[i])}}}
+new MutationObserver(function(rs){for(var i=0;i<rs.length;i++){var a=rs[i].addedNodes;
+for(var j=0;j<a.length;j++){var n=a[j];
+if(n instanceof HTMLMediaElement){harden(n)}else{sweep(n)}}}})
+.observe(document.documentElement,{childList:true,subtree:true});
+document.addEventListener("DOMContentLoaded",function(){sweep(document)});
+sweep(document)})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Otimização do Cadastro de Produtos — Tenkitermodas.com.br</title>
+<style>
+  :root{
+    --bg:#0b1020; --bg2:#111834; --card:#151d3b; --card2:#1b2549;
+    --line:#26315c; --txt:#e8ecf8; --mut:#9aa6c9; --dim:#6f7ca6;
+    --ok:#2fd18a; --okbg:rgba(47,209,138,.10);
+    --warn:#ffb020; --warnbg:rgba(255,176,32,.10);
+    --crit:#ff5c6c; --critbg:rgba(255,92,108,.10);
+    --med:#ff8a3d; --medbg:rgba(255,138,61,.10);
+    --low:#5aa9ff; --lowbg:rgba(90,169,255,.10);
+    --acc:#7c5cff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:radial-gradient(1200px 600px at 15% -10%, #1a2350 0%, var(--bg) 55%) no-repeat, var(--bg);
+    color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:48px 22px 90px}
+  header.hero{
+    border:1px solid var(--line); border-radius:20px; padding:34px 32px;
+    background:linear-gradient(135deg, rgba(124,92,255,.16), rgba(21,29,59,.9) 55%);
+    box-shadow:0 20px 60px rgba(0,0,0,.35);
+  }
+  .kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);font-weight:700}
+  h1{font-size:31px;line-height:1.22;margin:12px 0 10px;letter-spacing:-.02em}
+  .sub{color:var(--mut);font-size:15px;max-width:780px}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .chip{font-size:12.5px;color:var(--mut);border:1px solid var(--line);background:rgba(255,255,255,.03);
+    padding:6px 12px;border-radius:999px}
+  .chip b{color:var(--txt);font-weight:600}
+  h2{font-size:21px;margin:52px 0 6px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+  h2 .n{font-size:12px;color:var(--dim);border:1px solid var(--line);border-radius:8px;padding:2px 8px;font-weight:600}
+  .lead{color:var(--mut);font-size:14.5px;margin:0 0 20px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 20px}
+  .card h3{margin:0 0 8px;font-size:15.5px}
+  .card p{margin:0;color:var(--mut);font-size:13.8px}
+  .stat{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .stat .v{font-size:26px;font-weight:700;letter-spacing:-.02em}
+  .stat .l{font-size:12.5px;color:var(--mut);margin-top:2px}
+  .verdict{border-radius:16px;padding:20px 22px;border:1px solid;margin-top:22px}
+  .verdict.ok{border-color:rgba(47,209,138,.35);background:var(--okbg)}
+  .verdict h3{margin:0 0 6px;font-size:16px;color:var(--ok)}
+  .verdict p{margin:0;color:var(--mut);font-size:14px}
+  .verdict p + p{margin-top:8px}
+  .finding{border:1px solid var(--line);border-left-width:4px;border-radius:14px;background:var(--card);
+    padding:18px 20px;margin-bottom:14px}
+  .finding.crit{border-left-color:var(--crit)}
+  .finding.high{border-left-color:var(--med)}
+  .finding.med{border-left-color:var(--warn)}
+  .finding.low{border-left-color:var(--low)}
+  .fhead{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:8px}
+  .fhead h3{margin:0;font-size:15.5px;flex:1 1 320px}
+  .tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:6px}
+  .tag.crit{background:var(--critbg);color:var(--crit);border:1px solid rgba(255,92,108,.35)}
+  .tag.high{background:var(--medbg);color:var(--med);border:1px solid rgba(255,138,61,.35)}
+  .tag.med{background:var(--warnbg);color:var(--warn);border:1px solid rgba(255,176,32,.35)}
+  .tag.low{background:var(--lowbg);color:var(--low);border:1px solid rgba(90,169,255,.35)}
+  .tag.ok{background:var(--okbg);color:var(--ok);border:1px solid rgba(47,209,138,.35)}
+  .loc{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:var(--dim);
+    background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:6px;padding:2px 7px}
+  .finding p{margin:8px 0 0;color:var(--mut);font-size:14px}
+  .finding .fix{margin-top:12px;padding:12px 14px;border-radius:10px;background:rgba(47,209,138,.07);
+    border:1px solid rgba(47,209,138,.22);font-size:13.6px;color:#c9f3e0}
+  .finding .fix b{color:var(--ok)}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.6px;
+    background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:5px;padding:1px 5px;color:#d7e0ff}
+  pre{background:#0d1330;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.4px;line-height:1.55;color:#cdd7f5;margin:14px 0 0}
+  pre .c{color:#6f7ca6}
+  pre .k{color:#ff9ecb}
+  pre .s{color:#9ff0c4}
+  ul.clean{margin:10px 0 0;padding-left:20px;color:var(--mut);font-size:14px}
+  ul.clean li{margin:6px 0}
+  ul.clean li b{color:var(--txt);font-weight:600}
+  ol.steps{margin:14px 0 0;padding-left:0;list-style:none;counter-reset:s}
+  ol.steps li{position:relative;padding:12px 14px 12px 52px;border:1px solid var(--line);border-radius:12px;
+    background:var(--card);margin-bottom:10px;color:var(--mut);font-size:13.9px;counter-increment:s}
+  ol.steps li::before{content:counter(s);position:absolute;left:14px;top:12px;width:24px;height:24px;border-radius:8px;
+    background:rgba(124,92,255,.18);border:1px solid rgba(124,92,255,.4);color:#c9bcff;font-weight:700;font-size:12.5px;
+    display:flex;align-items:center;justify-content:center}
+  ol.steps li b{color:var(--txt)}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13.6px}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--dim);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  td{color:var(--mut)}
+  td b{color:var(--txt)}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px}
+  .pill.p1{background:var(--critbg);color:var(--crit)}
+  .pill.p2{background:var(--medbg);color:var(--med)}
+  .pill.p3{background:var(--warnbg);color:var(--warn)}
+  .pill.p4{background:var(--lowbg);color:var(--low)}
+  .pill.yes{background:var(--okbg);color:var(--ok)}
+  .pill.part{background:var(--warnbg);color:var(--warn)}
+  .pill.no{background:var(--critbg);color:var(--crit)}
+  .note{margin-top:16px;padding:14px 16px;border-radius:12px;background:rgba(124,92,255,.08);
+    border:1px solid rgba(124,92,255,.28);color:var(--mut);font-size:13.6px}
+  .note b{color:#c9bcff}
+  .flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin-top:16px}
+  .fbox{flex:1 1 150px;min-width:140px;background:var(--card2);border:1px solid var(--line);border-radius:12px;
+    padding:12px 13px;font-size:12.8px;color:var(--mut)}
+  .fbox b{display:block;color:var(--txt);font-size:13.2px;margin-bottom:3px}
+  .fbox.hot{border-color:rgba(255,92,108,.45);background:rgba(255,92,108,.07)}
+  .fbox.cool{border-color:rgba(47,209,138,.4);background:rgba(47,209,138,.07)}
+  .arrow{align-self:center;color:var(--dim);font-size:18px;font-weight:700}
+  .bar{height:9px;border-radius:6px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:7px}
+  .bar > i{display:block;height:100%;border-radius:6px}
+  .bar .r{background:linear-gradient(90deg,#ff5c6c,#ff8a3d)}
+  .bar .g{background:linear-gradient(90deg,#2fd18a,#5aa9ff)}
+  .phase{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:20px;margin-bottom:14px}
+  .phase .ph{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:6px}
+  .phase .ph h3{margin:0;font-size:16px;flex:1 1 300px}
+  .phase p{margin:6px 0 0;color:var(--mut);font-size:13.9px}
+  .phase ul{margin:10px 0 0;padding-left:20px;color:var(--mut);font-size:13.7px}
+  .phase ul li{margin:5px 0}
+  .phase ul li b{color:var(--txt)}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--line);color:var(--dim);font-size:12.6px}
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .toc a{font-size:12.6px;color:var(--mut);text-decoration:none;border:1px solid var(--line);
+    background:rgba(255,255,255,.03);padding:6px 12px;border-radius:999px}
+  .toc a:hover{color:var(--txt);border-color:var(--acc)}
+  @media(max-width:640px){h1{font-size:25px}.wrap{padding:30px 16px 70px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">Análise técnica · Google Apps Script</div>
+    <h1>Otimização do cadastro de produtos<br>Tenkitermodas.com.br</h1>
+    <p class="sub">Diagnóstico do fluxo de salvamento atual, avaliação de viabilidade da proposta do dono
+      (fotos no início + salvamento em segundo plano + fila) e um desenho recomendado com riscos e plano de implementação.</p>
+    <div class="meta">
+      <span class="chip">Base: <b>catalogo-codigo-4.8.gs</b> · <b>funcionario-codigo-3.8.gs</b></span>
+      <span class="chip">Foco: <b>criarProduto_ / atualizarProduto_</b></span>
+      <span class="chip">Data: <b>14/10/2026</b></span>
+    </div>
+    <div class="toc">
+      <a href="#fluxo">1 · Como funciona hoje</a>
+      <a href="#gargalo">2 · Onde está o gargalo</a>
+      <a href="#proposta">3 · A proposta do dono</a>
+      <a href="#limites">4 · Limites do Apps Script</a>
+      <a href="#desenho">5 · Desenho recomendado</a>
+      <a href="#riscos">6 · Riscos</a>
+      <a href="#plano">7 · Plano de implementação</a>
+    </div>
+  </header>
+
+  <div class="verdict ok">
+    <h3>✅ Veredito: a ideia é viável — e o maior ganho vem de algo que o código já sabe fazer</h3>
+    <p>O gargalo real <b>não é a gravação na planilha</b>: é o <b>trânsito das fotos</b>. Hoje as imagens viajam
+      em base64 dentro do POST até o Apps Script e só então são reenviadas, uma a uma, para o Cloudinary — tudo
+      dentro do mesmo pedido que o funcionário espera.</p>
+    <p>A solução de maior impacto é <b>subir as fotos direto do navegador para o Cloudinary</b> (o script já faz
+      exatamente isso com o vídeo, via <code>assinarUploadVideo_</code>). Com isso o "salvar" passa a carregar só
+      URLs e cai de dezenas de segundos para poucos segundos. O "salvamento em segundo plano" e a "fila" são
+      <b>possíveis, mas com ressalvas</b> — o Apps Script não tem fila nativa; ela se monta com uma aba + gatilho de tempo.</p>
+  </div>
+
+  <h2 id="fluxo"><span class="n">01</span> Como funciona hoje</h2>
+  <p class="lead">O cadastro de produto é uma única chamada <code>POST</code> para o Web App do Apps Script
+    (<code>action: "create"</code>), que percorre este caminho dentro de <code>criarProduto_</code>:</p>
+
+  <ol class="steps">
+    <li><b>O navegador monta o corpo JSON</b> com todos os campos <i>e</i> as fotos em base64
+      (<code>fotoBase64</code>, <code>fotoStoriesBase64</code>, <code>fotosGaleriaBase64[]</code>) e, às vezes,
+      o vídeo em base64. Uma foto de 3 MB vira ~4 MB de texto; 8 fotos + capa + stories ≈ <b>30–40 MB de corpo</b>.</li>
+    <li><b>Autorização</b> — <code>doPostInterno_</code> chama <code>permissaoDaAcao_</code> e
+      <code>autorizarAcao_</code>, que valida o token de sessão lendo a planilha de pessoas.</li>
+    <li><b>Roteamento</b> — <code>create</code> está em <code>ACOES_QUE_ALTERAM_PRODUTOS_</code>, mas
+      <b>não</b> em <code>ACOES_COM_TRAVA_</code>: então <b>não</b> pega o lock global de 30 s (só o contador de
+      código pega um lock curto).</li>
+    <li><b>Validação + anti-duplicado</b> — <code>criarProduto_</code> lê a planilha inteira
+      (<code>getDataRange().getValues()</code>) para procurar nome+preço repetidos nos últimos 10 s.</li>
+    <li><b>Upload das fotos (o ponto caro)</b> — para cada imagem, <code>salvarFotoCloudinary_</code> →
+      <code>cldSubir_</code> faz um <code>UrlFetchApp.fetch</code> <b>síncrono e sequencial</b> para o Cloudinary,
+      decodificando o base64 no servidor. Capa + stories + até 8 da galeria = <b>até 10 idas e voltas</b>.</li>
+    <li><b>Gravação</b> — <code>appendRow</code> da linha, depois <code>setNumberFormat</code>+<code>setValues</code>
+      e <code>setValue</code> da galeria (3 escritas), mais <code>gravarVideo_</code> se houver vídeo.</li>
+    <li><b>Histórico + push</b> — <code>registrarHistorico_</code> grava na aba <i>Historico</i>; se for novidade
+      com aviso, <code>pushEnviar_</code> faz uma chamada HTTP <b>síncrona</b> ao OneSignal.</li>
+    <li><b>Carimbo de auditoria</b> — <code>despacharComCarimbo_</code> → <code>carimbarProdutos_</code> lê
+      <b>5 colunas inteiras</b> da planilha e regrava <b>5 colunas inteiras</b> (CriadoPor/Em, EditadoPor/Em, UltimaAcao).</li>
+    <li><b>Resposta</b> — só então o JSON volta ao navegador e o funcionário vê "salvo".</li>
+  </ol>
+
+  <div class="flow">
+    <div class="fbox hot"><b>1. Navegador</b>Fotos em base64 no corpo do POST (30–40 MB)</div>
+    <div class="arrow">→</div>
+    <div class="fbox hot"><b>2. Apps Script</b>Autoriza + lê planilha inteira</div>
+    <div class="arrow">→</div>
+    <div class="fbox hot"><b>3. Cloudinary</b>10 uploads sequenciais, um por foto</div>
+    <div class="arrow">→</div>
+    <div class="fbox hot"><b>4. Planilha</b>Grava linha + carimbo de 5 colunas</div>
+    <div class="arrow">→</div>
+    <div class="fbox hot"><b>5. OneSignal</b>Push síncrono (se novidade)</div>
+    <div class="arrow">→</div>
+    <div class="fbox"><b>6. Resposta</b>Funcionário só agora vê "salvo"</div>
+  </div>
+
+  <h2 id="gargalo"><span class="n">02</span> Onde está o gargalo</h2>
+  <p class="lead">Estimativas de tempo para um produto com capa + 6 fotos de galeria, em rede móvel razoável.
+    A ordem de grandeza é o que importa — o total hoje fica tipicamente entre <b>20 e 60 segundos</b>.</p>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>🔴 Trânsito das fotos (base64) — o maior custo</h3>
+      <p>O navegador precisa enviar ~30–40 MB para o Google <i>antes</i> de o servidor começar a trabalhar; depois o
+        Apps Script reenvia tudo ao Cloudinary. É banda paga duas vezes e o funcionário espera as duas.</p>
+      <div class="bar"><i class="r" style="width:92%"></i></div>
+    </div>
+    <div class="card">
+      <h3>🔴 Uploads sequenciais no servidor</h3>
+      <p><code>processarGaleriaFotos_</code> usa <code>forEach</code> com <code>await</code> implícito: cada foto só
+        começa quando a anterior termina. 10 fotos × 1–3 s = <b>10–30 s</b> só aqui.</p>
+      <div class="bar"><i class="r" style="width:78%"></i></div>
+    </div>
+    <div class="card">
+      <h3>🟠 Leituras da planilha inteira</h3>
+      <p><code>getDataRange().getValues()</code> é chamado várias vezes (anti-duplicado, carimbo). Numa planilha com
+        milhares de linhas, cada leitura custa centenas de ms — e o carimbo lê e regrava 5 colunas completas.</p>
+      <div class="bar"><i class="r" style="width:55%"></i></div>
+    </div>
+    <div class="card">
+      <h3>🟠 Push síncrono</h3>
+      <p><code>pushEnviar_</code> roda dentro do mesmo pedido. Se o OneSignal estiver lento, o cadastro inteiro
+        espera por um aviso que não é essencial.</p>
+      <div class="bar"><i class="r" style="width:35%"></i></div>
+    </div>
+    <div class="card">
+      <h3>🟡 LockService (nas edições)</h3>
+      <p><code>update</code>/<code>delete</code>/<code>bulkUpdate</code> pegam o lock global com
+        <code>waitLock(30000)</code>. Dois funcionários salvando juntos: um espera até 30 s e pode receber
+        "o sistema está salvando outra alteração".</p>
+      <div class="bar"><i class="r" style="width:30%"></i></div>
+    </div>
+    <div class="card">
+      <h3>🟡 Contador de código com lock</h3>
+      <p><code>proximoCodigo_</code> abre um lock de 5 s e grava em Propriedades. É rápido, mas é mais um ponto de
+        serialização em cada cadastro.</p>
+      <div class="bar"><i class="r" style="width:18%"></i></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Resumo do diagnóstico:</b> o tempo é dominado por <b>movimentação de bytes</b> (base64 no POST + uploads
+    sequenciais), não pela gravação. Por isso a correção mais eficaz é tirar as fotos do caminho do Apps Script —
+    e não "salvar mais rápido na planilha".
+  </div>
+
+  <h2 id="proposta"><span class="n">03</span> A proposta do dono, parte por parte</h2>
+  <p class="lead">A ideia tem três partes. Duas são excelentes e uma precisa de ajuste de expectativa.</p>
+
+  <table>
+    <thead>
+      <tr><th>Parte da ideia</th><th>Viável?</th><th>Como fica</th><th>Ressalva</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>Selecionar as fotos logo no início</b></td>
+        <td><span class="pill yes">Sim</span></td>
+        <td>Assim que a foto é escolhida, o navegador pede uma assinatura ao servidor e sobe a imagem
+          <b>direto para o Cloudinary</b>, em paralelo, enquanto o funcionário preenche o resto.</td>
+        <td>Precisa de uma ação nova <code>assinarUploadFoto</code> (hoje só existe para vídeo) e de limpeza de
+          arquivos órfãos.</td>
+      </tr>
+      <tr>
+        <td><b>Cadastro salvo em segundo plano enquanto preenche</b></td>
+        <td><span class="pill part">Parcial</span></td>
+        <td>O que faz sentido salvar em segundo plano é o <b>rascunho do formulário</b> (texto), não o produto.
+          Guardar no <code>localStorage</code> é grátis; persistir numa aba <i>Rascunhos</i> a cada ~15 s é barato.</td>
+        <td>Gravar o produto de verdade a cada tecla poluiria o catálogo e multiplicaria as escritas na planilha
+          (que são caras). O produto só deve nascer no clique final.</td>
+      </tr>
+      <tr>
+        <td><b>Servidor conclui numa fila, sem o funcionário esperar</b></td>
+        <td><span class="pill part">Parcial</span></td>
+        <td>Com as fotos já no Cloudinary, o trabalho restante no servidor é <b>1 linha + auditoria</b> (2–3 s).
+          Para isso, esperar não incomoda. A fila vale para o que é pesado: importação em lote, pós-processamento
+          de vídeo, push.</td>
+        <td>O Apps Script <b>não tem fila nativa</b>. Ela se monta com uma aba <i>Fila</i> + um gatilho de tempo
+          (mínimo 1 minuto). O pedido HTTP termina quando a função retorna — não há "trabalho em background" real
+          dentro de uma requisição.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Tradução prática:</b> a parte "fotos no início" resolve ~80% da lentidão sozinha. A "fila" é a cereja do
+    bolo para operações em lote — não é o que destrava o cadastro do dia a dia.
+  </div>
+
+  <h2 id="limites"><span class="n">04</span> Limites do Apps Script que condicionam o desenho</h2>
+  <p class="lead">Estes são os tetos que definem o que pode e o que não pode ser feito. Valores de referência —
+    confirme a cota da conta (Gmail comum × Google Workspace) no painel do Apps Script.</p>
+
+  <table>
+    <thead>
+      <tr><th>Limite</th><th>Valor típico</th><th>Impacto no cadastro</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><b>Tempo de execução por chamada</b></td><td>6 min (Workspace) / ~6 min (Gmail)</td>
+        <td>Um upload de vídeo grande <b>não cabe</b> no pedido — por isso o vídeo já sobe direto do navegador.</td></tr>
+      <tr><td><b>UrlFetchApp — chamadas/dia</b></td><td>~20.000 (Gmail) / ~100.000 (Workspace)</td>
+        <td>Cada foto = 1 chamada. 10 fotos por produto × muitos produtos consome cota rápido.</td></tr>
+      <tr><td><b>UrlFetchApp — dados recebidos/dia</b></td><td>~100 MB/dia</td>
+        <td><b>Crítico:</b> se as fotos passarem pelo Apps Script, a cota de banda estoura em poucos cadastros.
+          Subir direto do navegador contorna isso.</td></tr>
+      <tr><td><b>LockService (script lock)</b></td><td><code>waitLock</code> máx. 30 s</td>
+        <td>Serializa as escritas. Com fila, o gatilho processa um job por vez — sem disputa.</td></tr>
+      <tr><td><b>Gatilhos por tempo</b></td><td>Intervalo mínimo 1 min</td>
+        <td>A fila tem latência de até ~1 min. Aceitável para lote; ruim para o clique do dia a dia.</td></tr>
+      <tr><td><b>Tempo total de gatilhos/dia</b></td><td>~90 min (Gmail) / ~6 h (Workspace)</td>
+        <td>Limita quanto processamento em background dá para rodar por dia.</td></tr>
+      <tr><td><b>Corpo do POST</b></td><td>~50 MB</td>
+        <td>O base64 infla ~33%. 8 fotos grandes já chegam perto do teto e tornam o envio lento.</td></tr>
+      <tr><td><b>CacheService</b></td><td>100 KB por chave · 6 h máx.</td>
+        <td>O código já fatia em pedaços de 30 KB — ok. Não serve como fila durável.</td></tr>
+      <tr><td><b>PropertiesService</b></td><td>500 KB total · 9 KB por valor</td>
+        <td>Bom para contadores e flags; não para guardar fila nem rascunhos.</td></tr>
+      <tr><td><b>Concorrência</b></td><td>Execuções paralelas permitidas</td>
+        <td>Sem lock, duas escritas podem se cruzar. Manter o lock nas seções críticas.</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="desenho"><span class="n">05</span> Desenho recomendado</h2>
+  <p class="lead">Quatro fases, da maior para a menor relação ganho/esforço. A Fase 1 sozinha já resolve o problema
+    relatado.</p>
+
+  <div class="phase">
+    <div class="ph"><h3>Fase 1 — Upload direto de fotos do navegador para o Cloudinary</h3>
+      <span class="pill p1">Maior ganho</span><span class="pill yes">Baixo risco</span></div>
+    <p>Generalizar o que já existe para vídeo. O navegador sobe cada foto em paralelo, direto ao Cloudinary, e o
+      "salvar" passa a enviar apenas URLs.</p>
+    <ul>
+      <li><b>Nova ação</b> <code>assinarUploadFoto</code> (ou <code>assinarUploadMidia</code> com <code>tipo</code>),
+        reaproveitando <code>cldCredenciais_</code> e a assinatura SHA-1.</li>
+      <li><b>Assinatura restrita</b>: incluir <code>allowed_formats=jpg,png,webp</code>,
+        <code>max_file_size</code>, <code>folder</code> por usuário e <code>timestamp</code> curto — hoje a
+        assinatura cobre só <code>folder</code>+<code>timestamp</code> e pode ser reutilizada.</li>
+      <li><b>Cliente</b>: <code>FileReader</code> → <code>fetch</code> paralelo ao Cloudinary → guarda a
+        <code>secure_url</code>; o formulário mostra a miniatura e uma barra de progresso por foto.</li>
+      <li><b>Servidor</b>: <code>criarProduto_</code> deixa de decodificar base64 e só grava as URLs recebidas.</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="ph"><h3>Fase 2 — Rascunho incremental</h3>
+      <span class="pill p2">Ganho alto</span><span class="pill yes">Baixo risco</span></div>
+    <p>Protege o trabalho do funcionário sem poluir o catálogo.</p>
+    <ul>
+      <li><b>localStorage</b> a cada mudança (grátis, instantâneo): se a página fechar, o formulário volta preenchido.</li>
+      <li><b>Aba <i>Rascunhos</i></b> opcional, gravada a cada ~15 s ou no botão "salvar rascunho" — leve, uma linha
+        por rascunho, sem tocar na planilha de produtos.</li>
+      <li>O produto de verdade só nasce no clique final — evita duplicatas e escritas desnecessárias.</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="ph"><h3>Fase 3 — Fila de processamento (aba + gatilho)</h3>
+      <span class="pill p3">Para o pesado</span><span class="pill part">Médio risco</span></div>
+    <p>Para operações que não cabem no pedido: importação de CSV, lote, pós-processamento de vídeo, push em massa.</p>
+    <ul>
+      <li><b>Aba <i>Fila</i></b> com colunas <code>JobID, Tipo, Payload, Status, Tentativas, CriadoEm, Erro</code>.</li>
+      <li><b>Gatilho de tempo</b> (a cada 1 min) chama <code>processarFila_</code>, que pega os jobs
+        <code>pendente</code>, executa com lock e marca <code>ok</code>/<code>erro</code>.</li>
+      <li><b>Retry com limite</b> (ex.: 3 tentativas) e alerta na aba <i>Erros_Log</i> quando estourar.</li>
+      <li>O <code>doPost</code> enfileira e responde na hora — o funcionário não espera.</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="ph"><h3>Fase 4 — Processamento em lote + otimizações de planilha</h3>
+      <span class="pill p4">Complementar</span><span class="pill yes">Baixo risco</span></div>
+    <p>O <code>importarProdutos_</code> já existe (até 300 linhas, com simulação). Expor no painel e reduzir o custo
+      das leituras.</p>
+    <ul>
+      <li><b>Cadastro em lote</b>: subir CSV + fotos por URL, com prévia antes de aplicar.</li>
+      <li><b>Trocar <code>getDataRange().getValues()</code></b> por leituras por coluna/índice e cachear o índice de
+        produtos (id → linha).</li>
+      <li><b>Otimizar <code>carimbarProdutos_</code></b>: escrever só a(s) linha(s) afetada(s), não 5 colunas inteiras.</li>
+      <li><b>Push fora do pedido</b>: enfileirar o aviso em vez de chamar o OneSignal de forma síncrona.</li>
+    </ul>
+  </div>
+
+  <div class="flow">
+    <div class="fbox cool"><b>Navegador</b>Fotos sobem direto ao Cloudinary, em paralelo</div>
+    <div class="arrow">→</div>
+    <div class="fbox cool"><b>Cloudinary</b>Devolve <code>secure_url</code> de cada foto</div>
+    <div class="arrow">→</div>
+    <div class="fbox cool"><b>Salvar</b>POST leve: só URLs + campos</div>
+    <div class="arrow">→</div>
+    <div class="fbox cool"><b>Apps Script</b>Grava 1 linha + auditoria (2–3 s)</div>
+    <div class="arrow">→</div>
+    <div class="fbox cool"><b>Fila</b>Push e lote processados depois</div>
+  </div>
+
+  <h2 id="riscos"><span class="n">06</span> Riscos e mitigação</h2>
+  <table>
+    <thead>
+      <tr><th>Risco</th><th>Gravidade</th><th>Mitigação</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><b>Assinatura de upload reutilizável</b> — hoje cobre só <code>folder</code>+<code>timestamp</code>;
+        pode ser reaproveitada para subir arquivos arbitrários.</td>
+        <td><span class="pill p1">Alto</span></td>
+        <td>Assinar também <code>allowed_formats</code>, <code>max_file_size</code> e <code>folder</code> por
+          usuário; janela de <code>timestamp</code> curta; <code>public_id</code> aleatório.</td></tr>
+      <tr><td><b>Arquivos órfãos no Cloudinary</b> — funcionário sobe fotos e abandona o formulário.</td>
+        <td><span class="pill p2">Médio</span></td>
+        <td>Job de limpeza (na fila) que apaga mídia sem produto associado após N dias, usando <code>tags</code>/
+          <code>context</code> e a API de administração.</td></tr>
+      <tr><td><b>Fila travada</b> — gatilho falha e jobs ficam presos em <code>pendente</code>.</td>
+        <td><span class="pill p2">Médio</span></td>
+        <td>Status + contador de tentativas + alerta em <i>Erros_Log</i>; job com mais de X min volta para a fila.</td></tr>
+      <tr><td><b>Concorrência</b> — duas escritas se cruzam sem lock.</td>
+        <td><span class="pill p2">Médio</span></td>
+        <td>Manter o <code>LockService</code> nas seções críticas; a fila processa um job por vez.</td></tr>
+      <tr><td><b>Consistência</b> — produto aparece no site antes das fotos.</td>
+        <td><span class="pill p3">Baixo</span></td>
+        <td>Como as fotos sobem antes do clique, a URL já existe quando a linha é gravada. Validar que toda foto
+          tem <code>secure_url</code> antes de salvar.</td></tr>
+      <tr><td><b>Custo Cloudinary</b> — uploads diretos consomem banda/créditos.</td>
+        <td><span class="pill p3">Baixo</span></td>
+        <td>Comprimir no cliente antes de subir (canvas, ~1600 px, qualidade 0.8) e monitorar o plano.</td></tr>
+      <tr><td><b>Regressão no fluxo antigo</b> — fotos já no Drive/Cloudinary e o caminho base64 legado.</td>
+        <td><span class="pill p3">Baixo</span></td>
+        <td>Manter <code>fotoBase64</code>/<code>videoBase64</code> como caminho de compatibilidade durante a
+          transição; migrar o painel por último.</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="plano"><span class="n">07</span> Plano de implementação recomendado</h2>
+  <table>
+    <thead>
+      <tr><th>Fase</th><th>Entrega</th><th>Esforço</th><th>Ganho esperado</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="pill p1">1</span></td>
+        <td>Upload direto de fotos (ação <code>assinarUploadFoto</code> + cliente paralelo + assinatura restrita)</td>
+        <td>Médio</td><td><b>De 20–60 s para 2–5 s</b> no cadastro com várias fotos</td></tr>
+      <tr><td><span class="pill p2">2</span></td>
+        <td>Rascunho incremental (localStorage + aba <i>Rascunhos</i>)</td>
+        <td>Baixo</td><td>Não perde o preenchimento; menos retrabalho</td></tr>
+      <tr><td><span class="pill p3">3</span></td>
+        <td>Fila (aba <i>Fila</i> + gatilho de 1 min + retry)</td>
+        <td>Médio</td><td>Lote e push sem travar o funcionário</td></tr>
+      <tr><td><span class="pill p4">4</span></td>
+        <td>Lote no painel + otimização de leituras e do carimbo</td>
+        <td>Médio</td><td>Cadastro de vários produtos de uma vez; planilha mais leve</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Ordem sugerida:</b> entregar a Fase 1 primeiro e medir. Se o cadastro cair para poucos segundos, a Fase 3
+    (fila) deixa de ser urgente e vira melhoria para operações em lote. A Fase 2 pode ir junto com a 1, pois é barata.
+  </div>
+
+  <h2><span class="n">08</span> Anexo — trechos de referência</h2>
+  <p class="lead">O padrão de upload direto já existe no código para vídeo; basta generalizá-lo para fotos.</p>
+
+  <pre><span class="c">// catalogo-codigo-4.8.gs — já existe para VÍDEO (linha ~498)</span>
+<span class="k">function</span> assinarUploadVideo_(body) {
+  <span class="k">const</span> cred = cldCredenciais_();
+  <span class="k">const</span> timestamp = Math.floor(<span class="k">new</span> Date().getTime() / 1000);
+  <span class="k">const</span> paramsAssinados = <span class="s">'folder='</span> + CLOUDINARY_PASTA + <span class="s">'&timestamp='</span> + timestamp;
+  <span class="k">const</span> assinatura = cldHex_(Utilities.computeDigest(
+      Utilities.DigestAlgorithm.SHA_1, paramsAssinados + cred.apiSecret));
+  <span class="k">return</span> jsonResponse_({ ok: <span class="k">true</span>, cloudName: cred.cloudName, apiKey: cred.apiKey,
+      timestamp: timestamp, folder: CLOUDINARY_PASTA, signature: assinatura });
+}
+
+<span class="c">// PROPOSTA — mesma ideia para FOTO, com assinatura restrita</span>
+<span class="k">function</span> assinarUploadFoto_(body) {
+  <span class="k">const</span> cred = cldCredenciais_();
+  <span class="k">const</span> timestamp = Math.floor(<span class="k">new</span> Date().getTime() / 1000);
+  <span class="k">const</span> pasta = CLOUDINARY_PASTA + <span class="s">'/'</span> + acWhats_(body.whatsapp); <span class="c">// pasta por usuário</span>
+  <span class="k">const</span> params = <span class="s">'allowed_formats=jpg,png,webp&folder='</span> + pasta +
+      <span class="s">'&max_file_size=8000000&timestamp='</span> + timestamp;
+  <span class="k">const</span> assinatura = cldHex_(Utilities.computeDigest(
+      Utilities.DigestAlgorithm.SHA_1, params + cred.apiSecret));
+  <span class="k">return</span> jsonResponse_({ ok: <span class="k">true</span>, cloudName: cred.cloudName, apiKey: cred.apiKey,
+      timestamp: timestamp, folder: pasta, allowedFormats: <span class="s">'jpg,png,webp'</span>,
+      maxFileSize: 8000000, signature: assinatura });
+}</pre>
+
+  <pre><span class="c">// catalogo-codigo-4.8.gs — hoje: upload sequencial no servidor (linha ~2079)</span>
+<span class="k">function</span> processarGaleriaFotos_(fotosBase64Array, idProduto) {
+  <span class="k">const</span> urls = [];
+  fotosBase64Array.forEach((b64, idx) => {          <span class="c">// um por vez, dentro do pedido</span>
+    <span class="k">if</span> (b64) urls.push(salvarFotoCloudinary_(b64, <span class="s">'image/jpeg'</span>, <span class="s">'produto_'</span> + idProduto + <span class="s">'_galeria_'</span> + idx + <span class="s">'.jpg'</span>));
+  });
+  <span class="k">return</span> urls.join(<span class="s">','</span>);
+}
+
+<span class="c">// PROPOSTA — o servidor só recebe as URLs já prontas</span>
+<span class="k">function</span> criarProduto_(body) {
+  <span class="c">// ... validações e anti-duplicado iguais ...</span>
+  <span class="k">const</span> fotoUrl = body.fotoUrl || <span class="s">''</span>;                 <span class="c">// veio do Cloudinary</span>
+  <span class="k">const</span> galeria = limitarGaleria_((body.fotosGaleriaUrls || []).join(<span class="s">','</span>));
+  <span class="c">// grava a linha com as URLs — sem decodificar base64, sem UrlFetchApp</span>
+}</pre>
+
+  <footer>
+    Análise estática sobre <b>catalogo-codigo-4.8.gs</b> e <b>funcionario-codigo-3.8.gs</b>. Os tempos são
+    estimativas de ordem de grandeza; as cotas do Apps Script variam entre conta Gmail e Google Workspace e devem
+    ser confirmadas no painel do projeto. Itens de configuração (Propriedades do Script, plano do Cloudinary,
+    gatilhos instalados) não foram inspecionados.
+  </footer>
+
+</div>
+<script>
+  document.querySelectorAll('.toc a').forEach(function (a) {
+    a.addEventListener('click', function (ev) {
+      var alvo = document.querySelector(a.getAttribute('href'));
+      if (alvo) { ev.preventDefault(); alvo.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+</script>
+</body>
+</html>

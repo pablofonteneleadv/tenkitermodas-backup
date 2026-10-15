@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><script data-tmly-media-guard="1">(function(){"use strict";
+var T=window.__tmly||(window.__tmly=(function(){
+var o={},n=String(window.name||"");
+if(n.slice(0,5)==="tmly:"){n.slice(5).split("&").forEach(function(kv){
+var i=kv.indexOf("=");if(i>0){o[kv.slice(0,i)]=kv.slice(i+1)}})}
+return o})());
+if(T.presentation!=="preview"){return}
+var K="tmly:media-muted:"+String(location.pathname).replace(/[^/]*$/,"");
+var muted=false;try{muted=localStorage.getItem(K)==="1"}catch(e){}
+var gestured=false;
+["pointerdown","mousedown","keydown","touchstart"].forEach(function(t){
+document.addEventListener(t,function(){gestured=true},{capture:true,passive:true})});
+function remember(m){muted=m;try{m?localStorage.setItem(K,"1"):localStorage.removeItem(K)}catch(e){}}
+function announcePaused(el){try{el.dispatchEvent(new Event("pause"))}catch(e){}}
+function harden(el){
+el.autoplay=false;el.removeAttribute("autoplay");
+if(el.getAttribute("preload")==="auto"){el.setAttribute("preload","none")}
+if(muted){el.muted=true}
+if(!gestured&&!el.paused){try{el.pause()}catch(e){}}}
+var play=HTMLMediaElement.prototype.play;
+HTMLMediaElement.prototype.play=function(){
+if(!gestured){announcePaused(this);
+return Promise.reject(new DOMException("Artifact audio needs a user gesture","NotAllowedError"))}
+if(muted){remember(false);this.muted=false}
+return play.apply(this,arguments)};
+var acProtos=[];
+function guardAC(n){
+var N=window[n];if(!N||!N.prototype){return}
+if(acProtos.indexOf(N.prototype)<0){acProtos.push(N.prototype);
+var res=N.prototype.resume;
+if(typeof res==="function"){N.prototype.resume=function(){
+if(!gestured){return Promise.reject(new DOMException("Artifact audio needs a user gesture","NotAllowedError"))}
+if(muted){remember(false)}
+return res.apply(this,arguments)}}}
+var W=function(o){var c=arguments.length?new N(o):new N();
+if(!gestured){try{c.suspend()}catch(e){}}return c};
+W.prototype=N.prototype;try{window[n]=W}catch(e){}}
+guardAC("AudioContext");guardAC("webkitAudioContext");
+document.addEventListener("play",function(e){
+var el=e.target;if(el instanceof HTMLMediaElement&&!gestured){try{el.pause()}catch(err){}}},true);
+document.addEventListener("pause",function(e){
+if(e.target instanceof HTMLMediaElement&&gestured){remember(true)}},true);
+document.addEventListener("volumechange",function(e){
+var el=e.target;if(el instanceof HTMLMediaElement&&gestured){remember(el.muted||el.volume===0)}},true);
+function sweep(n){if(n&&n.querySelectorAll){var l=n.querySelectorAll("audio,video");
+for(var i=0;i<l.length;i++){harden(l[i])}}}
+new MutationObserver(function(rs){for(var i=0;i<rs.length;i++){var a=rs[i].addedNodes;
+for(var j=0;j<a.length;j++){var n=a[j];
+if(n instanceof HTMLMediaElement){harden(n)}else{sweep(n)}}}})
+.observe(document.documentElement,{childList:true,subtree:true});
+document.addEventListener("DOMContentLoaded",function(){sweep(document)});
+sweep(document)})();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Auditoria Frontend — TENKiTER Modas</title>
+  <meta name="description" content="Relatório de auditoria frontend do projeto tenkitermodas.com.br: estrutura, UI/UX, responsividade, performance e boas práticas.">
+  <style>
+    :root{
+      --bg:#0d0d0d;
+      --panel:#151515;
+      --panel-2:#1f1f1f;
+      --text:#f7f3ee;
+      --muted:#cfc6bc;
+      --line:rgba(255,255,255,.12);
+      --orange:#ff7a1a;
+      --green:#25d366;
+      --red:#ff4d4d;
+      --yellow:#ffd166;
+      --blue:#78a6ff;
+      --shadow:0 24px 80px rgba(0,0,0,.36);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    a{color:var(--orange)}
+    .hero{position:relative;overflow:hidden;padding:72px 20px 44px;border-bottom:1px solid var(--line);background:radial-gradient(circle at top right,rgba(255,122,26,.22),transparent 36%),linear-gradient(180deg,#17110c 0%,#0d0d0d 78%)}
+    .wrap{max-width:1180px;margin:0 auto}
+    .kicker{display:inline-flex;gap:8px;align-items:center;color:#120900;background:var(--orange);font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:.75rem;border-radius:999px;padding:8px 12px}
+    h1{font-size:clamp(2.2rem,7vw,5.3rem);line-height:.96;margin:22px 0 16px;letter-spacing:-.07em;max-width:980px}
+    .lead{font-size:clamp(1.04rem,2.4vw,1.34rem);max-width:880px;color:var(--muted);margin:0}
+    .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+    .pill{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:999px;padding:9px 13px;color:#f3ede8;font-size:.9rem}
+    .toc{position:sticky;top:0;z-index:10;background:rgba(13,13,13,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);overflow:auto;white-space:nowrap}
+    .toc .wrap{display:flex;gap:10px;padding:10px 20px}
+    .toc a{text-decoration:none;color:var(--text);border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-weight:750;font-size:.88rem}
+    main{padding:34px 20px 76px}
+    section{margin:0 auto 26px;max-width:1180px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.025));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .section-head{padding:28px 28px 8px}
+    h2{font-size:clamp(1.55rem,3.4vw,2.8rem);line-height:1.04;margin:0 0 10px;letter-spacing:-.045em}
+    h3{font-size:1.18rem;margin:0 0 10px;color:#fff}
+    p{margin:0 0 12px;color:var(--muted)}
+    .grid{display:grid;gap:16px;padding:20px 28px 30px}
+    .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .card{background:rgba(0,0,0,.24);border:1px solid var(--line);border-radius:18px;padding:18px}
+    .scoreboard{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:18px}
+    .score{padding:18px;border-radius:18px;background:#0f0f0f;border:1px solid var(--line);position:relative;overflow:hidden}
+    .score strong{display:block;font-size:2.3rem;line-height:1;color:#fff;margin-bottom:8px}
+    .score span{font-size:.86rem;color:var(--muted);font-weight:750;text-transform:uppercase;letter-spacing:.04em}
+    .score.good strong{color:var(--green)}.score.warn strong{color:var(--yellow)}.score.bad strong{color:var(--red)}
+    .metric-list{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+    .metric-list li{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed rgba(255,255,255,.12);padding:8px 0;color:var(--muted)}
+    .metric-list b{color:#fff;text-align:right}
+    .tag{display:inline-flex;align-items:center;border-radius:999px;padding:4px 9px;font-size:.78rem;font-weight:850;margin:2px;background:rgba(255,122,26,.12);color:#ffd4b2;border:1px solid rgba(255,122,26,.35)}
+    .tag.ok{background:rgba(37,211,102,.12);border-color:rgba(37,211,102,.35);color:#baf6cf}.tag.warn{background:rgba(255,209,102,.12);border-color:rgba(255,209,102,.35);color:#ffe3a1}.tag.risk{background:rgba(255,77,77,.12);border-color:rgba(255,77,77,.35);color:#ffc0c0}.tag.info{background:rgba(120,166,255,.12);border-color:rgba(120,166,255,.35);color:#c9dcff}
+    .shots{display:grid;grid-template-columns:1fr 1.4fr;gap:18px;padding:0 28px 30px;align-items:start}
+    figure{margin:0;background:#0b0b0b;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+    figure img{display:block;width:100%;height:auto}
+    figcaption{padding:12px 14px;color:var(--muted);font-size:.88rem;border-top:1px solid var(--line)}
+    .finding{display:grid;grid-template-columns:120px 1fr;gap:12px;border-top:1px solid var(--line);padding:16px 0}
+    .finding:first-child{border-top:0;padding-top:0}
+    .priority{font-weight:900;text-align:center;border-radius:12px;padding:8px 10px;height:max-content}.p1{background:rgba(255,77,77,.16);color:#ffc0c0;border:1px solid rgba(255,77,77,.38)}.p2{background:rgba(255,209,102,.14);color:#ffe3a1;border:1px solid rgba(255,209,102,.32)}.p3{background:rgba(37,211,102,.12);color:#baf6cf;border:1px solid rgba(37,211,102,.32)}
+    code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em;background:rgba(255,255,255,.08);padding:.12em .36em;border-radius:6px;color:#fff}
+    table{width:100%;border-collapse:collapse;font-size:.93rem;color:var(--muted)}
+    th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top} th{color:#fff;background:rgba(255,255,255,.05)}
+    .callout{margin:20px 28px 30px;padding:18px;border-radius:18px;border:1px solid rgba(255,122,26,.35);background:rgba(255,122,26,.10)}
+    .callout p{margin:0;color:#ffe3ce}.callout strong{color:#fff}
+    footer{padding:26px 20px 44px;color:var(--muted);text-align:center;border-top:1px solid var(--line)}
+    @media(max-width:850px){.grid.cols-2,.grid.cols-3,.scoreboard,.shots{grid-template-columns:1fr}.finding{grid-template-columns:1fr}.hero{padding-top:50px}.section-head,.grid{padding-left:18px;padding-right:18px}.shots{padding-left:18px;padding-right:18px}.callout{margin-left:18px;margin-right:18px}}
+    @media print{body{background:#fff;color:#111}.toc{display:none}section,.card,.score,figure{box-shadow:none;background:#fff;color:#111;border-color:#ddd}p,.metric-list li,td,figcaption,footer{color:#333}a{color:#111}}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <span class="kicker">Auditoria Frontend</span>
+      <h1>TENKiTER Modas — análise técnica do frontend</h1>
+      <p class="lead">Avaliação do código do repositório GitHub <strong>pablofonteneleadv/tenkiter-catalogo</strong> e do site publicado <strong>https://tenkitermodas.com.br</strong>, cobrindo estrutura, UI/UX, responsividade, performance e boas práticas.</p>
+      <div class="meta">
+        <span class="pill">Data da auditoria: 15/10/2026</span>
+        <span class="pill">Site: Cloudflare + Render</span>
+        <span class="pill">Lighthouse mobile executado</span>
+        <span class="pill">Screenshots: mobile e desktop</span>
+      </div>
+      <div class="scoreboard" aria-label="Pontuação Lighthouse mobile">
+        <div class="score warn"><strong>59</strong><span>Performance</span></div>
+        <div class="score good"><strong>100</strong><span>Acessibilidade</span></div>
+        <div class="score warn"><strong>79</strong><span>Boas práticas</span></div>
+        <div class="score good"><strong>100</strong><span>SEO</span></div>
+      </div>
+    </div>
+  </header>
+  <nav class="toc" aria-label="Navegação do relatório">
+    <div class="wrap">
+      <a href="#resumo">Resumo</a><a href="#estrutura">Estrutura</a><a href="#uiux">UI/UX</a><a href="#responsividade">Responsividade</a><a href="#performance">Performance</a><a href="#boas-praticas">Boas práticas</a><a href="#prioridades">Prioridades</a>
+    </div>
+  </nav>
+  <main>
+    <section id="resumo">
+      <div class="section-head">
+        <h2>Resumo executivo</h2>
+        <p>O frontend está funcional, bem adaptado ao uso mobile e com forte cuidado em SEO, PWA e acessibilidade. O maior gargalo atual é performance percebida no carregamento do catálogo: o LCP móvel ficou em 5,8 s, principalmente por atraso na descoberta/carregamento da imagem principal e dependência de chamadas ao Apps Script.</p>
+      </div>
+      <div class="grid cols-3">
+        <div class="card"><h3>✅ Pontos fortes</h3><p>Arquitetura estática simples, PWA completo, navegação inferior consistente, filtros úteis para catálogo, metadados ricos, sitemap/feed e camada dedicada de acessibilidade.</p></div>
+        <div class="card"><h3>⚠️ Pontos de atenção</h3><p>CSS e JS muito concentrados em <code>index.html</code>, scripts síncronos no <code>&lt;head&gt;</code>, imagens sem variações responsivas e gargalo no Apps Script.</p></div>
+        <div class="card"><h3>🎯 Prioridade recomendada</h3><p>Ativar uma lista pública cacheada em Worker/KV, servir imagens redimensionadas/WebP/AVIF e modularizar/minificar os assets críticos.</p></div>
+      </div>
+      <div class="shots">
+        <figure><img src="images/mobile.png" alt="Screenshot mobile do site TENKiTER Modas"><figcaption>Mobile 390 × 844: foco correto em catálogo, busca, filtros e cards de produto.</figcaption></figure>
+        <figure><img src="images/desktop.png" alt="Screenshot desktop do site TENKiTER Modas"><figcaption>Desktop 1440 × 900: layout mantém identidade visual e usa grade com múltiplas colunas.</figcaption></figure>
+      </div>
+    </section>
+
+    <section id="estrutura">
+      <div class="section-head"><h2>1. Estrutura e arquitetura frontend</h2><p>Projeto majoritariamente estático, sem framework SPA pesado. A aplicação combina HTML/CSS/JS direto, Apps Script como backend operacional, Cloudflare Workers/R2 para mídia e recursos de PWA.</p></div>
+      <div class="grid cols-2">
+        <div class="card"><h3>Arquivos principais observados</h3><table><tr><th>Arquivo</th><th>Papel</th><th>Tamanho</th></tr><tr><td><code>index.html</code></td><td>Catálogo, CSS inline e lógica principal de listagem/filtros.</td><td>145.206 bytes / 1.987 linhas</td></tr><tr><td><code>common.js</code></td><td>Configuração, API, sessão, utilitários compartilhados.</td><td>47.871 bytes / 891 linhas</td></tr><tr><td><code>pedido.js</code></td><td>Fluxos de pedido/sacola.</td><td>38.541 bytes / 496 linhas</td></tr><tr><td><code>push.js</code></td><td>Notificações/OneSignal.</td><td>39.475 bytes / 621 linhas</td></tr><tr><td><code>nav.js</code></td><td>Barra inferior comum e permissões locais.</td><td>10.357 bytes / 189 linhas</td></tr><tr><td><code>a11y.js</code></td><td>Melhorias globais de acessibilidade.</td><td>7.815 bytes / 151 linhas</td></tr></table></div>
+        <div class="card"><h3>Leitura técnica</h3><p><span class="tag ok">Boa separação por responsabilidade</span> O projeto já separa preocupações em módulos como <code>common.js</code>, <code>nav.js</code>, <code>pwa.js</code>, <code>a11y.js</code>, <code>pedido.js</code> e <code>push.js</code>.</p><p><span class="tag warn">Dívida técnica</span> O <code>index.html</code> concentra 41.964 caracteres de CSS inline e 84.684 caracteres de JS inline. Isso dificulta cache independente, minificação, testes e manutenção.</p><p><span class="tag info">Sem framework</span> A ausência de React/Vue reduz dependências e custo de bundle, mas exige disciplina maior em organização, testes e componentes reutilizáveis.</p></div>
+      </div>
+      <div class="callout"><p><strong>Recomendação estrutural:</strong> manter a abordagem estática, mas extrair o CSS do catálogo para <code>catalogo.css</code> e a lógica inline principal para <code>catalogo.js</code>, com build mínimo de minificação e versionamento por hash ou query string.</p></div>
+    </section>
+
+    <section id="uiux">
+      <div class="section-head"><h2>2. UI/UX e design system</h2><p>A experiência é clara para e-commerce local: destaque para catálogo, busca, categorias, favoritos, sacola e contato por WhatsApp. A identidade visual preto + laranja é consistente e reconhecível.</p></div>
+      <div class="grid cols-3">
+        <div class="card"><h3>Design tokens</h3><p>Foram encontrados 9 CSS custom properties no <code>index.html</code>. A paleta é coesa: preto como base, laranja como ação/brand, verde para WhatsApp e neutros para textos/fundos.</p></div>
+        <div class="card"><h3>Componentes UX</h3><p>Há componentes úteis para conversão: chips de categoria, filtros por preço/gênero, favoritos, seleção compartilhável, sacola, CTA flutuante de WhatsApp e bottom sheets.</p></div>
+        <div class="card"><h3>Feedback e estado</h3><p>O código inclui toast de carregamento, aviso offline, cache de catálogo e estado de sessão/permissões — bons sinais para UX resiliente.</p></div>
+      </div>
+      <div class="grid cols-2">
+        <div class="card"><h3>O que funciona bem</h3><ul><li>Cards de produto com imagem forte e preço legível.</li><li>Busca e filtros ficam visíveis logo no topo.</li><li>Barra inferior reduz fricção em mobile.</li><li>Botões têm áreas de toque adequadas e aparência clara.</li><li>SEO social robusto com Open Graph e JSON-LD.</li></ul></div>
+        <div class="card"><h3>Melhorias de UX recomendadas</h3><ul><li>Reduzir densidade visual no topo em telas pequenas: busca + filtros + chips podem competir por atenção.</li><li>Adicionar skeleton loading para cards enquanto a lista pública carrega.</li><li>Destacar visualmente “Novidades” e “Mais vendidos” se houver dados.</li><li>Exibir estado de “imagem carregando” ou fallback uniforme em mídia lenta.</li><li>Padronizar labels visíveis e nomes acessíveis dos botões de sacola.</li></ul></div>
+      </div>
+    </section>
+
+    <section id="responsividade">
+      <div class="section-head"><h2>3. Responsividade</h2><p>O site demonstra abordagem mobile-first: usa viewport correto, barra inferior, grids adaptáveis, áreas de toque grandes, media queries e unidades seguras com <code>env(safe-area-inset-bottom)</code>.</p></div>
+      <div class="grid cols-3">
+        <div class="card"><h3>Evidências</h3><ul class="metric-list"><li><span><code>@media</code> no <code>index.html</code></span><b>8</b></li><li><span>Uso de <code>dvh</code></span><b>1</b></li><li><span>Preconnects</span><b>7</b></li><li><span>Screenshot mobile</span><b>390 × 844</b></li><li><span>Screenshot desktop</span><b>1440 × 900</b></li></ul></div>
+        <div class="card"><h3>Mobile</h3><p>No screenshot mobile, a hierarquia principal é boa: marca, busca, filtros e grid de produtos aparecem sem quebra crítica. A navegação inferior segue padrão familiar de app.</p></div>
+        <div class="card"><h3>Desktop</h3><p>No desktop, a grade aproveita mais largura, mas o conteúdo ainda mantém cara de catálogo mobile ampliado. Isso é aceitável para tráfego majoritariamente mobile, mas há espaço para layouts mais editoriais no desktop.</p></div>
+      </div>
+      <div class="callout"><p><strong>Recomendação de responsividade:</strong> adicionar <code>srcset/sizes</code> nas imagens dos cards e revisar breakpoints acima de 1024 px para reduzir espaços vazios e valorizar coleções/categorias em desktop.</p></div>
+    </section>
+
+    <section id="performance">
+      <div class="section-head"><h2>4. Performance e Core Web Vitals</h2><p>A pontuação Lighthouse mobile foi 59. O site é leve em bytes totais reportados pelo Lighthouse, mas sofre em LCP e bloqueio de thread por dependências síncronas, imagens e chamadas ao Apps Script.</p></div>
+      <div class="grid cols-2">
+        <div class="card"><h3>Métricas Lighthouse mobile</h3><ul class="metric-list"><li><span>Performance</span><b>59/100</b></li><li><span>FCP</span><b>1,8 s</b></li><li><span>LCP</span><b>5,8 s</b></li><li><span>Total Blocking Time</span><b>710 ms</b></li><li><span>CLS</span><b>0,05</b></li><li><span>Speed Index</span><b>2,9 s</b></li><li><span>TTI</span><b>5,8 s</b></li><li><span>Documento raiz</span><b>220 ms</b></li><li><span>Peso total</span><b>335 KiB</b></li><li><span>DOM</span><b>563 elementos</b></li></ul></div>
+        <div class="card"><h3>Principais gargalos</h3><ul><li><strong>LCP:</strong> elemento LCP é uma imagem de card em <code>div#grid &gt; div.card &gt; div.img-wrap &gt; img</code>.</li><li><strong>Fase do LCP:</strong> 79% do tempo foi “Load Delay” (4.542 ms), sinal de descoberta/carregamento tardio da imagem.</li><li><strong>API:</strong> requisições ao Apps Script levaram entre 1.455 ms e 3.965 ms.</li><li><strong>Render blocking:</strong> <code>common.js</code>, <code>meta.js</code>, <code>conta.js</code> e Google Fonts somaram economia estimada de 790 ms se otimizados.</li></ul></div>
+      </div>
+      <div class="grid cols-3">
+        <div class="card"><h3>Imagens</h3><p><span class="tag risk">P1</span> Lighthouse estimou economia de 1.789 KiB em imagens responsivas e 598 KiB usando formatos modernos. Priorizar WebP/AVIF, redimensionamento no Worker/R2 e <code>srcset</code>.</p></div>
+        <div class="card"><h3>JavaScript</h3><p><span class="tag warn">P2</span> Lighthouse apontou 18 KiB economizáveis com minificação e 29 KiB com redução de JS não usado. Extrair e minificar o JS inline ajudaria cache e parse.</p></div>
+        <div class="card"><h3>Cache</h3><p><span class="tag warn">P2</span> Dois recursos do OneSignal foram sinalizados com TTL limitado. Os assets próprios estão atrás de Cloudflare/Render; versionamento explícito facilitaria TTL agressivo.</p></div>
+      </div>
+      <div class="callout"><p><strong>Ação de maior impacto:</strong> o próprio código já prevê <code>LISTA_RAPIDA_URL</code>, mas está vazio. Publicar a lista em Cloudflare Worker/KV/R2 com cache de borda deve reduzir a dependência do Apps Script e antecipar a renderização dos cards.</p></div>
+    </section>
+
+    <section id="boas-praticas">
+      <div class="section-head"><h2>5. Acessibilidade, SEO, segurança e boas práticas</h2><p>O projeto tem bom nível de maturidade em acessibilidade e SEO, com pontos pontuais para evoluir em manutenção, CSP e consistência de código.</p></div>
+      <div class="grid cols-2">
+        <div class="card"><h3>Acessibilidade</h3><ul class="metric-list"><li><span>Lighthouse Acessibilidade</span><b>100/100</b></li><li><span>Atributos <code>aria-*</code> no index</span><b>64</b></li><li><span><code>role="..."</code></span><b>27</b></li><li><span><code>&lt;img&gt;</code> estáticos</span><b>6</b></li><li><span><code>alt=</code></span><b>5</b></li><li><span><code>loading="lazy"</code></span><b>2</b></li></ul><p>Há um módulo <code>a11y.js</code> dedicado para labels, foco em modais, teclado e traps de foco — excelente prática.</p></div>
+        <div class="card"><h3>Pontos de acessibilidade a corrigir</h3><p>Lighthouse ainda registrou <code>label-content-name-mismatch</code> em botões <code>.ac-sacola</code>. O botão tem texto visível que não corresponde exatamente ao nome acessível. Ajustar <code>aria-label</code> para conter o texto visível ou remover divergência.</p><p>Também vale garantir <code>alt</code> em 100% das imagens estáticas e nos cards gerados dinamicamente.</p></div>
+      </div>
+      <div class="grid cols-3">
+        <div class="card"><h3>SEO</h3><p><span class="tag ok">100/100</span> O site possui <code>title</code>, meta description, canonical, Open Graph, Twitter Card, JSON-LD, sitemap e feed CSV. Muito bom para catálogo social/WhatsApp.</p></div>
+        <div class="card"><h3>Segurança</h3><p>Há CSP via meta tag e <code>object-src 'none'</code>, <code>base-uri 'self'</code> e <code>form-action 'self'</code>. Melhor seria migrar CSP e headers como HSTS/Permissions-Policy para HTTP quando a hospedagem permitir.</p></div>
+        <div class="card"><h3>Manutenibilidade</h3><p>Não foram encontrados <code>console.</code> nos principais JS. Há 0 handlers inline no <code>index.html</code>, 11 atributos <code>style="..."</code> e 1 <code>!important</code>, bons sinais. Porém módulos antigos usam bastante <code>var</code>, sugerindo legado compatível, mas menos moderno.</p></div>
+      </div>
+      <div class="grid cols-2">
+        <div class="card"><h3>Boas práticas observadas</h3><ul><li>Service worker/PWA com manifest e ícones.</li><li>Camada de navegação comum com cache de permissões.</li><li>Tratamento de sessão sem armazenar senha, conforme comentários do código.</li><li>CSP declarada e política de referrer.</li><li>Uso de <code>try/catch</code> defensivo para redes/recursos opcionais.</li></ul></div>
+        <div class="card"><h3>Riscos técnicos</h3><ul><li>Dependência crítica do Apps Script para a lista pública.</li><li><code>unsafe-inline</code> em CSP por causa de CSS/JS inline.</li><li>Scripts no <code>&lt;head&gt;</code> podem atrasar renderização.</li><li>Falta de pipeline de build/lint/test automatizado visível.</li><li>Grande volume de lógica em arquivos HTML dificulta revisão e versionamento.</li></ul></div>
+      </div>
+    </section>
+
+    <section id="prioridades">
+      <div class="section-head"><h2>Plano de recomendações priorizadas</h2><p>Ordem sugerida para obter ganho perceptível sem reescrever o projeto inteiro.</p></div>
+      <div class="grid">
+        <div class="finding"><div class="priority p1">P1 — Alta</div><div><h3>Cachear a lista pública fora do Apps Script</h3><p>Ativar <code>LISTA_RAPIDA_URL</code> com Cloudflare Worker/KV/R2 e TTL curto controlado. Evidência: chamadas ao Apps Script entre 1,4 s e 4,0 s, LCP 5,8 s e 79% do LCP em load delay.</p></div></div>
+        <div class="finding"><div class="priority p1">P1 — Alta</div><div><h3>Otimizar imagens dos cards</h3><p>Gerar miniaturas no tamanho real de exibição, usar WebP/AVIF quando suportado e aplicar <code>srcset/sizes</code>. Evidência: Lighthouse estimou 1.789 KiB em economia por imagens dimensionadas corretamente e 598 KiB por formatos modernos.</p></div></div>
+        <div class="finding"><div class="priority p2">P2 — Média</div><div><h3>Extrair, minificar e adiar scripts não críticos</h3><p>Mover JS inline de catálogo para arquivo próprio, minificar <code>common.js</code>, <code>pedido.js</code>, <code>push.js</code> e revisar scripts síncronos do <code>&lt;head&gt;</code>. Evidência: render blocking com economia estimada de 790 ms e 18 KiB economizáveis por minificação.</p></div></div>
+        <div class="finding"><div class="priority p2">P2 — Média</div><div><h3>Separar CSS crítico e CSS completo</h3><p>Manter apenas CSS acima da dobra inline ou carregado prioritariamente, movendo o restante para arquivo cacheável. Evidência: 41.964 caracteres de CSS inline no <code>index.html</code>.</p></div></div>
+        <div class="finding"><div class="priority p2">P2 — Média</div><div><h3>Corrigir nome acessível dos botões de sacola</h3><p>Sincronizar texto visível com <code>aria-label</code> em <code>.ac-sacola</code>. Evidência: Lighthouse sinalizou <code>label-content-name-mismatch</code>.</p></div></div>
+        <div class="finding"><div class="priority p3">P3 — Baixa</div><div><h3>Modernizar gradualmente módulos legados</h3><p>Converter <code>var</code> para <code>const/let</code> onde seguro, adicionar lint/format e testes simples de funções críticas. Manter compatibilidade se houver requisito de browsers antigos.</p></div></div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    Relatório gerado a partir de inspeção do repositório, site publicado, headers HTTP, Lighthouse mobile e screenshots renderizados. Escopo: frontend público do catálogo e assets associados.
+  </footer>
+</body>
+</html>
